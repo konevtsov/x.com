@@ -21,3 +21,15 @@ async def sign_up(
     auth_service: AuthService = Depends(AuthService)
 ):
     return await auth_service.sign_up(request)
+
+
+@router.post(
+    "/SignIn/",
+    summary="Вход в аккаунт",
+    response_model=CredentialsResponse,
+)
+async def sign_in(
+    request: SignInRequest,
+    auth_service: AuthService = Depends(AuthService),
+):
+    return await auth_service.sign_in(request)
