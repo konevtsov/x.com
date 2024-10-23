@@ -1,9 +1,10 @@
 from fastapi import Depends
-from sqlalchemy import Result, select, update
+from sqlalchemy import Result, select, update, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
 from schemas.user import UserSchema
+from schemas.auth import JWTToken
 from database.session import connector
 
 
@@ -27,7 +28,10 @@ class UserRepository:
         self._session.add(new_user)
         await self._session.commit()
 
-    async def update_refresh_token_by_username(self, username: str, refresh_token: str) -> None:
-        stmt = update(User).where(User.username == username).values(refresh_token=refresh_token)
+    async def update_refresh_token_by_username(self, data: JWTToken) -> None:
+        stmt = (
+            update(User).
+            where(User.username == data.username).
+            values(refresh_token=data.refresh_token)
+        )
         await self._session.execute(stmt)
-
