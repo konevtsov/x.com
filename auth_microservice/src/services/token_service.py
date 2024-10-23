@@ -3,7 +3,7 @@ from datetime import timedelta
 from fastapi import Depends
 
 from configuration.config import settings
-from schemas.user import UserSchema
+from schemas.auth import TokenData
 from services.jwt_service import JWTService
 
 TOKEN_TYPE_FIELD = "type"
@@ -30,10 +30,10 @@ class TokenService:
             expire_timedelta=expire_timedelta,
         )
 
-    def create_access_token(self, user: UserSchema) -> str:
+    def create_access_token(self, data: TokenData) -> str:
         jwt_payload = {
-            "sub": user.username,
-            "username": user.username,
+            "sub": data.username,
+            "username": data.username,
         }
         return self.create_jwt(
             token_type=ACCESS_TOKEN_TYPE,
@@ -41,9 +41,9 @@ class TokenService:
             expire_minutes=settings.auth_jwt.access_token_expire_minutes,
         )
 
-    def create_refresh_token(self, user: UserSchema) -> str:
+    def create_refresh_token(self, data: TokenData) -> str:
         jwt_payload = {
-            "sub": user.username,
+            "sub": data.username,
             # "username": user.username,
         }
         return self.create_jwt(
