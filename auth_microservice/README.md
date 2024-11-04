@@ -1,4 +1,16 @@
-# Выпуск токенов 
+# Auth microservice
+This service is responsible for user registration. 
+Technologies such as:
+- FastAPI
+- SQLAlchmemy
+- JWT
+- Uvicorn
+
+# Getting started
+
+
+### 1. Token issuance
+Create directory for private and public key
 ```shell
 mkdir src/certs && cd crs/certs
 ```
