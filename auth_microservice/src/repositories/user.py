@@ -14,7 +14,6 @@ class UserRepository:
 
     async def username_exists(self, username: str) -> bool:
         stmt = select(User).where(User.username == username)
-
         result: Result = await self._session.execute(stmt)
         return bool(result.scalar())
 
@@ -35,3 +34,21 @@ class UserRepository:
             values(refresh_token=data.refresh_token)
         )
         await self._session.execute(stmt)
+        await self._session.commit()
+
+    async def get_token_by_username(self, username: str) -> str:
+        stmt = (
+            select(User.refresh_token).
+            where(User.username == username)
+        )
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
+
+    async def delete_token(self, username: str):
+        stmt = (
+            update(User).
+            where(User.username == username).
+            values(refresh_token="")
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
