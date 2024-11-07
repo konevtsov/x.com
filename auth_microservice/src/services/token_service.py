@@ -51,3 +51,7 @@ class TokenService:
             token_data=jwt_payload,
             expire_timedelta=timedelta(days=settings.auth_jwt.refresh_token_expire_days),
         )
+
+    def get_token_payload(self, token: str) -> dict:
+        payload = self._jwt_service.decode_jwt(token=token)
+        return payload
