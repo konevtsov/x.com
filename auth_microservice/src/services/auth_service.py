@@ -16,6 +16,7 @@ from excepltions.auth import (
     UserAlreadyExistsException,
     UserNotFoundException,
     WrongPasswordException,
+    UnauthorizedException,
 )
 
 
@@ -63,3 +64,15 @@ class AuthService:
         )
 
         return CredentialsResponse(access_token=access_token, refresh_token=refresh_token)
+
+    async def sign_out(self, jwt_token: str) -> None:
+        jwt_token_payload = self._token_service.get_token_payload(jwt_token)
+        username = jwt_token_payload.get("sub")
+        token = await self._repository.get_token_by_username(username)
+
+        print(token)
+        print(jwt_token)
+        print(token == jwt_token)
+        if not token or token != jwt_token:
+            raise UnauthorizedException
+        await self._repository.delete_token(username)
