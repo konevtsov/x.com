@@ -16,3 +16,7 @@ WrongPasswordException = HTTPException(
     detail="Wrong password",
 )
 
+UnauthorizedException = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="User is not authorized"
+)
