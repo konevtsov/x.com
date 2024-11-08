@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
 from schemas.user import UserSchema
-from schemas.auth import JWTToken
+from schemas.auth import JWTTokenUpdate
 from database.session import connector
 
 
@@ -27,7 +27,7 @@ class UserRepository:
         self._session.add(new_user)
         await self._session.commit()
 
-    async def update_refresh_token_by_username(self, data: JWTToken) -> None:
+    async def update_refresh_token_by_username(self, data: JWTTokenUpdate) -> None:
         stmt = (
             update(User).
             where(User.username == data.username).
