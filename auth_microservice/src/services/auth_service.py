@@ -1,14 +1,19 @@
 from fastapi import Depends
 
 from .password_service import PasswordService
-from .jwt_service import JWTService
-from .token_service import TokenService
+from .token_service import (
+    TokenService,
+    TOKEN_TYPE_FIELD,
+    ACCESS_TOKEN_TYPE,
+    REFRESH_TOKEN_TYPE,
+    TOKEN_SUBJECT_FIELD,
+)
 from repositories.user import UserRepository
 from schemas.auth import (
     SignUpRequest,
     SignInRequest,
-    CredentialsResponse,
-    JWTToken,
+    TokenResponse,
+    JWTTokenUpdate,
     TokenData,
 )
 from schemas.user import UserSchema
@@ -31,25 +36,17 @@ class AuthService:
         self._password_service = password_service
         self._token_service = token_service
 
-    async def sign_up(self, request: SignUpRequest) -> CredentialsResponse:
+    async def sign_up(self, request: SignUpRequest) -> None:
         if await self._repository.username_exists(request.username):
             raise UserAlreadyExistsException
-
         password_hash = self._password_service.hash_password(request.password)
-        token_data = TokenData(username=request.username)
-        refresh_token = self._token_service.create_refresh_token(token_data)
-        access_token = self._token_service.create_access_token(token_data)
-
         new_user = UserSchema(
             username=request.username,
             password=str(password_hash),
-            refresh_token=refresh_token,
         )
         await self._repository.create_user(new_user)
 
-        return CredentialsResponse(access_token=access_token, refresh_token=refresh_token)
-
-    async def sign_in(self, request: SignInRequest) -> CredentialsResponse:
+    async def sign_in(self, request: SignInRequest) -> TokenResponse:
         user = await self._repository.get_user_by_username(request.username)
         if not user:
             raise UserNotFoundException
@@ -60,19 +57,37 @@ class AuthService:
         refresh_token = self._token_service.create_refresh_token(token_data)
         access_token = self._token_service.create_access_token(token_data)
         await self._repository.update_refresh_token_by_username(
-            JWTToken(username=request.username, refresh_token=refresh_token)
+            JWTTokenUpdate(username=request.username, refresh_token=refresh_token)
         )
 
-        return CredentialsResponse(access_token=access_token, refresh_token=refresh_token)
+        return TokenResponse(access_token=access_token, refresh_token=refresh_token)
 
     async def sign_out(self, jwt_token: str) -> None:
-        jwt_token_payload = self._token_service.get_token_payload(jwt_token)
-        username = jwt_token_payload.get("sub")
-        token = await self._repository.get_token_by_username(username)
+        token_payload = self._token_service.get_token_payload(jwt_token)
+        self._token_service.validate_token_type(token_payload, REFRESH_TOKEN_TYPE)
 
-        print(token)
-        print(jwt_token)
-        print(token == jwt_token)
-        if not token or token != jwt_token:
+        username = token_payload.get(TOKEN_SUBJECT_FIELD)
+        refresh_token = await self._repository.get_token_by_username(username)
+
+        if not refresh_token or refresh_token != jwt_token:
             raise UnauthorizedException
         await self._repository.delete_token(username)
+
+    async def refresh(self, jwt_token: str) -> TokenResponse:
+        """
+        Refresh access token
+        :param jwt_token: JWT token from Authorization header
+        :return: New access token
+        """
+        token_payload = self._token_service.get_token_payload(jwt_token)
+        self._token_service.validate_token_type(token_payload, REFRESH_TOKEN_TYPE)
+
+        username = token_payload.get(TOKEN_SUBJECT_FIELD)
+        refresh_token = await self._repository.get_token_by_username(username)
+
+        if not refresh_token or refresh_token != jwt_token:
+            raise UnauthorizedException
+
+        token_data = TokenData(username=username)
+        access_token = self._token_service.create_access_token(token_data)
+        return TokenResponse(access_token=access_token)

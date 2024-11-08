@@ -8,7 +8,7 @@ from fastapi.security import (
 from schemas.auth import (
     SignUpRequest,
     SignInRequest,
-    CredentialsResponse,
+    TokenResponse,
 )
 from services.auth_service import AuthService
 
@@ -22,7 +22,6 @@ http_bearer = HTTPBearer()
     "/SignUp/",
     status_code=status.HTTP_201_CREATED,
     summary="Регистрация нового пользователя",
-    response_model=CredentialsResponse,
 )
 async def sign_up(
     request: SignUpRequest,
@@ -35,9 +34,9 @@ async def sign_up(
     "/SignIn/",
     status_code=status.HTTP_200_OK,
     summary="Вход в аккаунт",
-    response_model=CredentialsResponse,
+    response_model=TokenResponse,
     responses={
-        200: {"model": CredentialsResponse},
+        200: {"model": TokenResponse},
         401: {"description": "Invalid username or password"},
         404: {"description": "User not found"},
     },
@@ -50,7 +49,7 @@ async def sign_in(
 
 
 @router.post(
-    "/SignOut",
+    "/SignOut/",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Выход из аккаунта",
 )
@@ -58,5 +57,23 @@ async def sign_out(
     auth_service: AuthService = Depends(AuthService),
     credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
 ):
-    token = credentials.credentials
-    await auth_service.sign_out(token)
+    jwt_token = credentials.credentials
+    await auth_service.sign_out(jwt_token)
+
+
+@router.post(
+    "/Refresh/",
+    status_code=status.HTTP_200_OK,
+    summary="Refresh access token",
+    response_model=TokenResponse,
+    response_model_exclude_none=True,
+    responses={
+        401: {"description": "User is not authorized"},
+    }
+)
+async def refresh(
+    auth_service: AuthService = Depends(AuthService),
+    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+):
+    jwt_token = credentials.credentials
+    return await auth_service.refresh(jwt_token)
