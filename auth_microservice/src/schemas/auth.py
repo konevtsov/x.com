@@ -11,12 +11,13 @@ class SignInRequest(BaseModel):
     password: str
 
 
-class CredentialsResponse(BaseModel):
+class TokenResponse(BaseModel):
+    refresh_token: str | None = None
     access_token: str
-    refresh_token: str
+    token_type: str = "Bearer"
 
 
-class JWTToken(BaseModel):
+class JWTTokenUpdate(BaseModel):
     username: str
     refresh_token: str
 
