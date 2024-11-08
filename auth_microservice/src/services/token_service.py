@@ -10,6 +10,7 @@ from services.jwt_service import JWTService
 TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
 REFRESH_TOKEN_TYPE = "refresh"
+TOKEN_SUBJECT_FIELD = "sub"
 
 
 class TokenService:
@@ -62,3 +63,12 @@ class TokenService:
                 detail="Invalid token error",
             )
         return payload
+
+    def validate_token_type(self, payload: dict, token_type: str) -> bool:
+        if payload.get(TOKEN_TYPE_FIELD) == token_type:
+            return True
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token type",
+        )
+
