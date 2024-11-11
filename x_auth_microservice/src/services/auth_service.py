@@ -17,11 +17,11 @@ from schemas.auth import (
     TokenData,
 )
 from schemas.user import UserSchema
-from excepltions.auth import (
-    UserAlreadyExistsException,
-    UserNotFoundException,
-    WrongPasswordException,
-    UnauthorizedException,
+from excepltions.auth_exceptions import (
+    UserAlreadyExists,
+    UserNotFound,
+    InvalidLoginPassword,
+    Unauthorized,
 )
 
 
@@ -38,7 +38,7 @@ class AuthService:
 
     async def sign_up(self, request: SignUpRequest) -> None:
         if await self._repository.username_exists(request.username):
-            raise UserAlreadyExistsException
+            raise UserAlreadyExists
         password_hash = self._password_service.hash_password(request.password)
         new_user = UserSchema(
             username=request.username,
@@ -49,9 +49,9 @@ class AuthService:
     async def sign_in(self, request: SignInRequest) -> TokenResponse:
         user = await self._repository.get_user_by_username(request.username)
         if not user:
-            raise UserNotFoundException
+            raise UserNotFound
         if not self._password_service.validate_password(request.password, user.password):
-            raise WrongPasswordException
+            raise InvalidLoginPassword
 
         token_data = TokenData(username=request.username)
         refresh_token = self._token_service.create_refresh_token(token_data)
@@ -70,7 +70,7 @@ class AuthService:
         refresh_token = await self._repository.get_token_by_username(username)
 
         if not refresh_token or refresh_token != jwt_token:
-            raise UnauthorizedException
+            raise Unauthorized
         await self._repository.delete_token(username)
 
     async def refresh(self, jwt_token: str) -> TokenResponse:
@@ -86,7 +86,7 @@ class AuthService:
         refresh_token = await self._repository.get_token_by_username(username)
 
         if not refresh_token or refresh_token != jwt_token:
-            raise UnauthorizedException
+            raise Unauthorized
 
         token_data = TokenData(username=username)
         access_token = self._token_service.create_access_token(token_data)

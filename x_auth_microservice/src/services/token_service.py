@@ -1,11 +1,16 @@
 from datetime import timedelta
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from jwt.exceptions import InvalidTokenError
 
 from configuration.config import settings
 from schemas.auth import TokenData
 from services.jwt_service import JWTService
+from excepltions.auth_exceptions import (
+    InvalidTokenType,
+    InvalidToken,
+)
+
 
 TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
@@ -58,17 +63,10 @@ class TokenService:
         try:
             payload = self._jwt_service.decode_jwt(token=token)
         except InvalidTokenError:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token error",
-            )
+            raise InvalidToken
         return payload
 
     def validate_token_type(self, payload: dict, token_type: str) -> bool:
         if payload.get(TOKEN_TYPE_FIELD) == token_type:
             return True
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type",
-        )
-
+        raise InvalidTokenType

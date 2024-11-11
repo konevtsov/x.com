@@ -22,6 +22,9 @@ http_bearer = HTTPBearer()
     "/SignUp/",
     status_code=status.HTTP_201_CREATED,
     summary="Регистрация нового пользователя",
+    responses={
+        201: {"description": "User created successfully"},
+    }
 )
 async def sign_up(
     request: SignUpRequest,
@@ -52,6 +55,10 @@ async def sign_in(
     "/SignOut/",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Выход из аккаунта",
+    responses={
+        401: {"description": "Invalid token type"},
+        403: {"description": "Not authorized"},
+    }
 )
 async def sign_out(
     auth_service: AuthService = Depends(AuthService),
