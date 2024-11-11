@@ -24,10 +24,10 @@ class Unauthorized(BaseExceptions):
 
 
 class InvalidTokenType(BaseExceptions):
-    status_code: int = status.HTTP_401_UNAUTHORIZED
+    status_code: int = status.HTTP_403_FORBIDDEN
     detail: str = "Invalid token type"
 
 
 class InvalidToken(BaseExceptions):
-    status_code: int = status.HTTP_401_UNAUTHORIZED
+    status_code: int = status.HTTP_403_FORBIDDEN
     detail: str = "Invalid token"
