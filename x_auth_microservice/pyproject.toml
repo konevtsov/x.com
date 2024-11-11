@@ -2,7 +2,7 @@
 name = "x-auth-microservice"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Egor Konevtsov <konevtsov.connect@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
