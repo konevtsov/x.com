@@ -1,4 +1,6 @@
 # Auth microservice
+- [Database schema](https://drawsql.app/teams/xcom-1/diagrams/x-auth-service)
+
 This service is responsible for user registration. 
 Technologies such as:
 - FastAPI
