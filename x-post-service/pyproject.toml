@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "x-post-service"
+version = "0.1.0"
+description = ""
+authors = ["Egor Konevtsov <konevtsov.connect@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["all"], version = "^0.115.5"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+asyncpg = "^0.30.0"
+pydantic-settings = "^2.6.1"
+pytest = "^8.3.3"
+alembic = "^1.14.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
