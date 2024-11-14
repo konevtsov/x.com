@@ -9,4 +9,4 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     about_me: Mapped[str] = mapped_column(String)
-    banned: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
