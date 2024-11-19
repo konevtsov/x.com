@@ -16,6 +16,9 @@ alembic = "^1.14.0"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 
 
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
