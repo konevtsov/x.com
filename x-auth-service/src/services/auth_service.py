@@ -39,15 +39,18 @@ class AuthService:
     async def sign_up(self, request: SignUpRequest) -> None:
         if await self._repository.username_exists(request.username):
             raise UserAlreadyExists
+        if await self._repository.email_exists(request.email):
+            raise UserAlreadyExists
         password_hash = self._password_service.hash_password(request.password)
         new_user = UserSchema(
             username=request.username,
+            email=request.email,
             password=str(password_hash),
         )
         await self._repository.create_user(new_user)
 
     async def sign_in(self, request: SignInRequest) -> TokenResponse:
-        user = await self._repository.get_user_by_username(request.username)
+        user = await self._repository.get_user_by_email(request.email)
         if not user:
             raise UserNotFound
         if not self._password_service.validate_password(request.password, user.password):
