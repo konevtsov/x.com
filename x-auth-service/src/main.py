@@ -6,6 +6,7 @@ from routes import api_router
 from create_fastapi_app import create_app
 
 main_app = create_app(
+    title=settings.run.title,
     create_custom_static_urls=True,
 )
 

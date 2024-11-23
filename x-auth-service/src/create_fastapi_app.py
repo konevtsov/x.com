@@ -45,9 +45,11 @@ def register_static_docs_routes(app: FastAPI):
 
 
 def create_app(
+    title: str,
     create_custom_static_urls: bool = False,
 ) -> FastAPI:
     app = FastAPI(
+        title=title,
         default_response_class=ORJSONResponse,
         lifespan=lifespan,
         docs_url=None if create_custom_static_urls else "/docs",
