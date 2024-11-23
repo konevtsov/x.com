@@ -1,4 +1,3 @@
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -45,7 +44,7 @@ def register_static_docs_routes(app: FastAPI):
 
 
 def create_app(
-    title: str,
+    title: str = "",
     create_custom_static_urls: bool = False,
 ) -> FastAPI:
     app = FastAPI(

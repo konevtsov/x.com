@@ -1,3 +1,4 @@
+from typing import Literal
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -7,13 +8,29 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
+
+LOG_DEFAULT_FORMAT = (
+    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+)
+
 BASE_DIR = Path(__file__).parent.parent
 
 
 class RunConfig(BaseModel):
-    # title: str
+    title: str = "X.com"
     host: str = "127.0.0.1"
     port: int = 8000
+
+
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+    ] = "INFO"
+    log_format: str = LOG_DEFAULT_FORMAT
 
 
 class AuthJWT(BaseModel):
@@ -42,12 +59,16 @@ class DatabaseConfig(BaseModel):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=(".env.dist", ".env"),
+        env_file=(
+            BASE_DIR / ".env.dist",
+            BASE_DIR / ".env",
+        ),
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
     )
     run: RunConfig = RunConfig()
+    logging: LoggingConfig = LoggingConfig()
     auth_jwt: AuthJWT = AuthJWT()
     db: DatabaseConfig
 

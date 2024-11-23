@@ -1,8 +1,8 @@
 import logging
-
 import uvicorn
 
 from configuration.config import settings
+
 from routes import api_router
 from create_fastapi_app import create_app
 
