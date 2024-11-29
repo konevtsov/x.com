@@ -6,7 +6,7 @@ from jwt.exceptions import InvalidTokenError
 from configuration.config import settings
 from schemas.auth import TokenData
 from services.jwt_service import JWTService
-from excepltions.auth_exceptions import (
+from exceptions.auth_exceptions import (
     InvalidTokenType,
     InvalidToken,
 )

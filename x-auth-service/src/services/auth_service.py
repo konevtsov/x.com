@@ -17,7 +17,7 @@ from schemas.auth import (
     TokenData,
 )
 from schemas.user import UserSchema
-from excepltions.auth_exceptions import (
+from exceptions.auth_exceptions import (
     UserAlreadyExists,
     UserNotFound,
     InvalidLoginPassword,
