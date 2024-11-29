@@ -16,6 +16,7 @@ pydantic-settings = "^2.6.0"
 pytest = "^8.3.3"
 alembic = "^1.13.3"
 pyjwt = {extras = ["crypto"], version = "^2.9.0"}
+aio-pika = "^9.5.1"
 
 
 [tool.poetry.group.dev.dependencies]
