@@ -13,7 +13,7 @@ from schemas.auth import (
 from services.auth_service import AuthService
 
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter()
 
 http_bearer = HTTPBearer()
 

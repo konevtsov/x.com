@@ -22,6 +22,16 @@ class RunConfig(BaseModel):
     port: int = 8000
 
 
+class ApiV1Prefix(BaseModel):
+    prefix: str = "/v1"
+    auth: str = "/auth"
+
+
+class ApiPrefix(BaseModel):
+    prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
+
+
 class LoggingConfig(BaseModel):
     log_level: Literal[
         "DEBUG",
@@ -70,6 +80,7 @@ class Settings(BaseSettings):
     run: RunConfig = RunConfig()
     logging: LoggingConfig = LoggingConfig()
     auth_jwt: AuthJWT = AuthJWT()
+    api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
 
 
