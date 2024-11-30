@@ -1,3 +1,4 @@
+# TODO: add function for building DSN
 from typing import Literal
 from pathlib import Path
 
@@ -51,6 +52,15 @@ class AuthJWT(BaseModel):
     refresh_token_expire_days: int = 60
 
 
+class RMQConfig(BaseModel):
+    user: str = "guest"
+    password: str = "guest"
+    host: str = "localhost"
+    port: int = 5672
+
+    url: str = f"amqp://{user}:{password}@{host}:{port}/"
+
+
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
     echo: bool = False
@@ -81,6 +91,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     auth_jwt: AuthJWT = AuthJWT()
     api: ApiPrefix = ApiPrefix()
+    rmq: RMQConfig = RMQConfig()
     db: DatabaseConfig
 
 
