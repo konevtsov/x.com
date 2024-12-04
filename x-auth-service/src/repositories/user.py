@@ -17,8 +17,18 @@ class UserRepository:
         result: Result = await self._session.execute(stmt)
         return bool(result.scalar())
 
+    async def email_exists(self, email: str) -> bool:
+        stmt = select(User).where(User.email == email)
+        result: Result = await self._session.execute(stmt)
+        return bool(result.scalar())
+
     async def get_user_by_username(self, username: str) -> User | None:
         stmt = select(User).where(User.username == username)
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
+
+    async def get_user_by_email(self, email: str) -> User | None:
+        stmt = select(User).where(User.email == email)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
