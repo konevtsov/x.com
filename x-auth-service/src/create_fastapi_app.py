@@ -1,4 +1,3 @@
-
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -11,13 +10,17 @@ from fastapi.openapi.docs import (
 
 from database.session import connector
 
+from configuration.rabbitmq.user_queue import user_mq
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
+    await user_mq.mq_connect()
     yield
     # shutdown
     await connector.dispose()
+    await user_mq.mq_close_connection()
 
 
 def register_static_docs_routes(app: FastAPI):
