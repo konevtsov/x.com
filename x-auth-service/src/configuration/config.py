@@ -23,6 +23,16 @@ class RunConfig(BaseModel):
     port: int = 8000
 
 
+class CorsSettings(BaseModel):
+    allow_origins: list[str] = [
+        "http://localhost",
+        "http://localhost:8000",
+    ]
+    allow_credentials: bool = True
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
     auth: str = "/auth"
@@ -88,6 +98,7 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     run: RunConfig = RunConfig()
+    cors: CorsSettings = CorsSettings()
     logging: LoggingConfig = LoggingConfig()
     auth_jwt: AuthJWT = AuthJWT()
     api: ApiPrefix = ApiPrefix()
