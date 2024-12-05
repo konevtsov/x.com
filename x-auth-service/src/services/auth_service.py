@@ -3,8 +3,6 @@ from fastapi import Depends
 from .password_service import PasswordService
 from .token_service import (
     TokenService,
-    TOKEN_TYPE_FIELD,
-    ACCESS_TOKEN_TYPE,
     REFRESH_TOKEN_TYPE,
     TOKEN_SUBJECT_FIELD,
 )
@@ -16,12 +14,16 @@ from schemas.auth import (
     JWTTokenUpdate,
     TokenData,
 )
-from schemas.user import UserSchema
+from schemas.user import UserSchema, UserOut
 from exceptions.auth_exceptions import (
     UserAlreadyExists,
     UserNotFound,
     InvalidLoginPassword,
     Unauthorized,
+)
+from configuration.rabbitmq.user_queue import (
+    user_mq,
+    MQ_USER_REGISTER_ROUTING_KEY,
 )
 
 
@@ -41,6 +43,7 @@ class AuthService:
             raise UserAlreadyExists
         if await self._repository.email_exists(request.email):
             raise UserAlreadyExists
+
         password_hash = self._password_service.hash_password(request.password)
         new_user = UserSchema(
             username=request.username,
@@ -48,6 +51,15 @@ class AuthService:
             password=str(password_hash),
         )
         await self._repository.create_user(new_user)
+
+        user_out = UserOut(
+            username=request.username,
+            email=request.email,
+        )
+        await user_mq.publish_message(
+            data=user_out,
+            routing_key=MQ_USER_REGISTER_ROUTING_KEY,
+        )
 
     async def sign_in(self, request: SignInRequest) -> TokenResponse:
         user = await self._repository.get_user_by_email(request.email)
