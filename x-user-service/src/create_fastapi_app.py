@@ -9,13 +9,18 @@ from fastapi.openapi.docs import (
 )
 
 from database.session import connector
+from configuration.rabbitmq.user_queue import user_queue
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # startup
+    await user_queue.mq_connect()
+    await user_queue.consume_messages()
+
     yield
     # shutdown
+    await user_queue.mq_close_connection()
     await connector.dispose()
 
 
