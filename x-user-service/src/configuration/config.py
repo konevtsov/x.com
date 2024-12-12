@@ -22,6 +22,26 @@ class RunConfig(BaseModel):
     port: int = 8000
 
 
+class CorsSettings(BaseModel):
+    allow_origins: list[str] = [
+        "http://localhost",
+        "http://localhost:8000",
+    ]
+    allow_credentials: bool = True
+    allow_methods: list[str] = ["*"]
+    allow_headers: list[str] = ["*"]
+
+
+class ApiV1Prefix(BaseModel):
+    prefix: str = "/v1"
+    users: str = "users"
+
+
+class ApiPrefix(BaseModel):
+    prefix: str = "/api"
+    v1: ApiV1Prefix = ApiV1Prefix()
+
+
 class LoggingConfig(BaseModel):
     log_level: Literal[
         "DEBUG",
@@ -49,6 +69,15 @@ class DatabaseConfig(BaseModel):
     }
 
 
+class RMQConfig(BaseModel):
+    user: str = "guest"
+    password: str = "guest"
+    host: str = "localhost"
+    port: int = 5672
+
+    url: str = f"amqp://{user}:{password}@{host}:{port}/"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -60,7 +89,9 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG__",
     )
     run: RunConfig = RunConfig()
+    cors: CorsSettings = CorsSettings()
     logging: LoggingConfig = LoggingConfig()
+    rmq: RMQConfig = RMQConfig()
     db: DatabaseConfig
 
 
