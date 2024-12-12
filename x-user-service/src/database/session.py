@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -39,6 +40,14 @@ class Connector:
     async def session_getter(self) -> AsyncGenerator[AsyncSession, None]:
         async with self.session_factory() as session:
             yield session
+
+    @asynccontextmanager
+    async def get_session(self) -> AsyncSession:
+        async for session in self.session_getter():
+            try:
+                yield session
+            finally:
+                await session.close()
 
 
 connector = Connector(
