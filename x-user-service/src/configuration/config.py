@@ -42,6 +42,15 @@ class ApiPrefix(BaseModel):
     v1: ApiV1Prefix = ApiV1Prefix()
 
 
+class AuthApi(BaseModel):
+    base_url: str = "http://localhost:8080/api/v1"
+    introspect_path: str = "/auth/introspect/"
+
+    @property
+    def introspect_url(self) -> str:
+        return self.base_url + self.introspect_path
+
+
 class LoggingConfig(BaseModel):
     log_level: Literal[
         "DEBUG",
@@ -92,6 +101,7 @@ class Settings(BaseSettings):
     cors: CorsSettings = CorsSettings()
     logging: LoggingConfig = LoggingConfig()
     rmq: RMQConfig = RMQConfig()
+    auth_api: AuthApi = AuthApi()
     db: DatabaseConfig
 
 
