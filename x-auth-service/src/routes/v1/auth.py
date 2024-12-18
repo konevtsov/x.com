@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from fastapi import Depends, APIRouter, status
 from fastapi.security import (
     HTTPBearer,
@@ -9,9 +8,9 @@ from schemas.auth import (
     SignUpRequest,
     SignInRequest,
     TokenResponse,
+    IntrospectResponse,
 )
 from services.auth_service import AuthService
-
 
 router = APIRouter()
 
@@ -84,3 +83,21 @@ async def refresh(
 ):
     jwt_token = credentials.credentials
     return await auth_service.refresh(jwt_token)
+
+
+@router.post(
+    path="/Introspect/",
+    status_code=status.HTTP_200_OK,
+    summary="Token introspection",
+    response_model=IntrospectResponse,
+    responses={
+        200: {"model": IntrospectResponse},
+        401: {"description": "User is not authorized"},
+    }
+)
+async def introspect(
+    auth_service: AuthService = Depends(AuthService),
+    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+):
+    jwt_token = credentials.credentials
+    return await auth_service.introspect(jwt_token)
