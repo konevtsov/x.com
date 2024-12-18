@@ -26,3 +26,7 @@ class JWTTokenUpdate(BaseModel):
 
 class TokenData(BaseModel):
     username: str
+
+
+class IntrospectResponse(BaseModel):
+    username: str
