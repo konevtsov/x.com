@@ -4,6 +4,7 @@ from .password_service import PasswordService
 from .token_service import (
     TokenService,
     REFRESH_TOKEN_TYPE,
+    ACCESS_TOKEN_TYPE,
     TOKEN_SUBJECT_FIELD,
 )
 from repositories.user import UserRepository
@@ -13,6 +14,7 @@ from schemas.auth import (
     TokenResponse,
     JWTTokenUpdate,
     TokenData,
+    IntrospectResponse,
 )
 from schemas.user import UserSchema, UserOut
 from exceptions.auth_exceptions import (
@@ -106,3 +108,10 @@ class AuthService:
         token_data = TokenData(username=username)
         access_token = self._token_service.create_access_token(token_data)
         return TokenResponse(access_token=access_token)
+
+    async def introspect(self, jwt_token: str) -> IntrospectResponse:
+        token_payload = self._token_service.get_token_payload(jwt_token)
+        self._token_service.validate_token_type(token_payload, ACCESS_TOKEN_TYPE)
+
+        username = token_payload.get(TOKEN_SUBJECT_FIELD)
+        return IntrospectResponse(username=username)
