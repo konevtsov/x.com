@@ -1,5 +1,4 @@
 import aio_pika
-from fastapi import Depends
 
 from services.user_service import UserService
 from repositories.user_repository import UserRepository
@@ -21,15 +20,12 @@ class UserQueue(BaseMQ):
             name=MQ_USER_EXCHANGE_NAME,
             type=aio_pika.ExchangeType.TOPIC,
         )
-        print("---------exchange declared--------------")
         queue = await self.channel.declare_queue(
             name=MQ_USER_QUEUE_NAME,
             durable=True,
         )
-        print("---------queue declared--------------")
         for binding_key in bindings_keys:
             await queue.bind(user_exchange, routing_key=binding_key)
-        print("---------queue binding--------------")
         return queue
 
     async def callback(
@@ -43,7 +39,6 @@ class UserQueue(BaseMQ):
             if msg.routing_key == ".signup":
                 user = UserInScheme.model_validate_json(msg.body)
                 await user_service.create_user(user=user)
-        print("-------------before ack---------------")
         await msg.ack()
 
     async def consume_messages(self):
@@ -51,8 +46,8 @@ class UserQueue(BaseMQ):
         queue = await self.declare_queue()
 
         async with queue.iterator() as iterator:
+            message: aio_pika.IncomingMessage
             async for message in iterator:
-                print("--------------before callback---------------")
                 await self.callback(message)
 
 

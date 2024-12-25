@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -16,10 +17,10 @@ from configuration.rabbitmq.user_queue import user_queue
 async def lifespan(app: FastAPI):
     # startup
     await user_queue.mq_connect()
-    await user_queue.consume_messages()
-
+    consumer_task = asyncio.create_task(user_queue.consume_messages())
     yield
     # shutdown
+    consumer_task.cancel()
     await user_queue.mq_close_connection()
     await connector.dispose()
 

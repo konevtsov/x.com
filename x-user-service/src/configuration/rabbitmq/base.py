@@ -13,7 +13,7 @@ class BaseMQ:
         self.channel = None
 
     async def mq_connect(self):
-        self.connection = await aio_pika.connect_robust(url=self.mq_url)
+        self.connection = await aio_pika.connect_robust(url=self.mq_url, timeout=10)
         self.channel = await self.connection.channel()
 
     async def mq_close_connection(self):
