@@ -3,7 +3,10 @@ __all__ = (
 )
 from fastapi import APIRouter
 
-from .user import router as user_router
+from .v1 import api_v1_router
+from configuration.config import settings
 
-api_router = APIRouter()
-api_router.include_router(user_router)
+api_router = APIRouter(
+    prefix=settings.api.prefix,
+)
+api_router.include_router(api_v1_router)
