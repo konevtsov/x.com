@@ -4,7 +4,7 @@ from fastapi import Depends
 from jwt.exceptions import InvalidTokenError
 
 from configuration.config import settings
-from schemas.auth import TokenData
+from schemas.auth import TokenDataSchema
 from services.jwt_service import JWTService
 from exceptions.auth_exceptions import (
     InvalidTokenType,
@@ -16,6 +16,7 @@ TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
 REFRESH_TOKEN_TYPE = "refresh"
 TOKEN_SUBJECT_FIELD = "sub"
+TOKEN_USERNAME_FIELD = "username"
 
 
 class TokenService:
@@ -37,9 +38,9 @@ class TokenService:
             expire_timedelta=expire_timedelta,
         )
 
-    def create_access_token(self, data: TokenData) -> str:
+    def create_access_token(self, data: TokenDataSchema) -> str:
         jwt_payload = {
-            "sub": data.username,
+            "sub": data.email,
             "username": data.username,
         }
         return self.create_jwt(
@@ -48,10 +49,10 @@ class TokenService:
             expire_minutes=settings.auth_jwt.access_token_expire_minutes,
         )
 
-    def create_refresh_token(self, data: TokenData) -> str:
+    def create_refresh_token(self, data: TokenDataSchema) -> str:
         jwt_payload = {
-            "sub": data.username,
-            # "username": user.username,
+            "sub": data.email,
+            "username": data.username,
         }
         return self.create_jwt(
             token_type=REFRESH_TOKEN_TYPE,
