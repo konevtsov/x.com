@@ -5,7 +5,7 @@ from repositories.user_repository import UserRepository
 from database.session import connector
 from .base import BaseMQ
 from configuration.config import settings
-from schemas.user import UserInScheme
+from dto.user import UserCreateDTO
 
 
 MQ_USER_EXCHANGE_NAME = "user"
@@ -37,7 +37,7 @@ class UserQueue(BaseMQ):
             user_repo = UserRepository(session=session)
             user_service = UserService(repository=user_repo)
             if msg.routing_key == ".signup":
-                user = UserInScheme.model_validate_json(msg.body)
+                user = UserCreateDTO.model_validate_json(msg.body)
                 await user_service.create_user(user=user)
         await msg.ack()
 
