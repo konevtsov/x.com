@@ -1,32 +1,33 @@
 from pydantic import BaseModel, EmailStr
 
 
-class SignUpRequest(BaseModel):
+class SignUpRequestSchema(BaseModel):
+    email: EmailStr
     username: str
+    password: str
+
+
+class SignInRequestSchema(BaseModel):
     email: EmailStr
     password: str
 
 
-class SignInRequest(BaseModel):
-    username: str
+class IntrospectResponseSchema(BaseModel):
     email: EmailStr
-    password: str
+    username: str
 
 
-class TokenResponse(BaseModel):
+class TokenResponseSchema(BaseModel):
     refresh_token: str | None = None
     access_token: str
     token_type: str = "Bearer"
 
 
-class JWTTokenUpdate(BaseModel):
-    username: str
+class JWTTokenUpdateSchema(BaseModel):
+    email: EmailStr
     refresh_token: str
 
 
-class TokenData(BaseModel):
-    username: str
-
-
-class IntrospectResponse(BaseModel):
+class TokenDataSchema(BaseModel):
+    email: EmailStr
     username: str
