@@ -1,23 +1,16 @@
 from aiohttp import ClientSession
-from pydantic import BaseModel
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from configuration.config import settings
-
-
-class InvalidTokenError(Exception):
-    pass
-
-
-class TokenIntrospect(BaseModel):
-    username: str
+from exceptions.token_exceptions import InvalidTokenError
+from schemas.token import TokenIntrospectSchema
 
 
 http_bearer = HTTPBearer()
 
 
-async def get_current_user_from_token(
+async def get_token_info_from_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
 ):
     jwt_token = credentials.credentials
@@ -29,5 +22,4 @@ async def get_current_user_from_token(
         ) as response:
             if not response.ok:
                 raise InvalidTokenError
-            return TokenIntrospect(**await response.json())
-
+            return TokenIntrospectSchema(**await response.json())
