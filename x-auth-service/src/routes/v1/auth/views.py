@@ -5,10 +5,10 @@ from fastapi.security import (
 )
 
 from schemas.auth import (
-    SignUpRequest,
-    SignInRequest,
-    TokenResponse,
-    IntrospectResponse,
+    SignUpRequestSchema,
+    SignInRequestSchema,
+    IntrospectResponseSchema,
+    TokenResponseSchema,
 )
 from services.auth_service import AuthService
 
@@ -20,13 +20,13 @@ http_bearer = HTTPBearer()
 @router.post(
     "/SignUp/",
     status_code=status.HTTP_201_CREATED,
-    summary="Регистрация нового пользователя",
+    summary="Sign up new account",
     responses={
         201: {"description": "User created successfully"},
     }
 )
 async def sign_up(
-    request: SignUpRequest,
+    request: SignUpRequestSchema,
     auth_service: AuthService = Depends(AuthService),
 ):
     return await auth_service.sign_up(request)
@@ -35,16 +35,16 @@ async def sign_up(
 @router.post(
     "/SignIn/",
     status_code=status.HTTP_200_OK,
-    summary="Вход в аккаунт",
-    response_model=TokenResponse,
+    summary="Sign in to account",
+    response_model=TokenResponseSchema,
     responses={
-        200: {"model": TokenResponse},
+        200: {"model": TokenResponseSchema},
         401: {"description": "Invalid username or password"},
         404: {"description": "User not found"},
     },
 )
 async def sign_in(
-    request: SignInRequest,
+    request: SignInRequestSchema,
     auth_service: AuthService = Depends(AuthService),
 ):
     return await auth_service.sign_in(request)
@@ -53,7 +53,7 @@ async def sign_in(
 @router.post(
     "/SignOut/",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Выход из аккаунта",
+    summary="Sign out from account",
     responses={
         401: {"description": "Invalid token type"},
         403: {"description": "Not authorized"},
@@ -71,7 +71,7 @@ async def sign_out(
     "/Refresh/",
     status_code=status.HTTP_200_OK,
     summary="Refresh access token",
-    response_model=TokenResponse,
+    response_model=TokenResponseSchema,
     response_model_exclude_none=True,
     responses={
         401: {"description": "User is not authorized"},
@@ -85,13 +85,13 @@ async def refresh(
     return await auth_service.refresh(jwt_token)
 
 
-@router.post(
+@router.get(
     path="/Introspect/",
     status_code=status.HTTP_200_OK,
     summary="Token introspection",
-    response_model=IntrospectResponse,
+    response_model=IntrospectResponseSchema,
     responses={
-        200: {"model": IntrospectResponse},
+        200: {"model": IntrospectResponseSchema},
         401: {"description": "User is not authorized"},
     }
 )
