@@ -4,7 +4,7 @@ __all__ = (
 from fastapi import APIRouter
 
 from configuration.config import settings
-from .auth import router as auth_router
+from .auth import auth_router
 
 
 api_v1_router = APIRouter(
