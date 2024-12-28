@@ -34,7 +34,7 @@ class CorsSettings(BaseModel):
 
 class ApiV1Prefix(BaseModel):
     prefix: str = "/v1"
-    users: str = "users"
+    users: str = "/users"
 
 
 class ApiPrefix(BaseModel):
@@ -43,8 +43,8 @@ class ApiPrefix(BaseModel):
 
 
 class AuthApi(BaseModel):
-    base_url: str = "http://localhost:8080/api/v1"
-    introspect_path: str = "/auth/introspect/"
+    base_url: str = "http://localhost:8001/api/v1"
+    introspect_path: str = "/auth/Introspect/"
 
     @property
     def introspect_url(self) -> str:
@@ -102,6 +102,7 @@ class Settings(BaseSettings):
     logging: LoggingConfig = LoggingConfig()
     rmq: RMQConfig = RMQConfig()
     auth_api: AuthApi = AuthApi()
+    api: ApiPrefix = ApiPrefix()
     db: DatabaseConfig
 
 
