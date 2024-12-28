@@ -3,19 +3,14 @@ from sqlalchemy import Result, select, update, insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
-from schemas.user import UserSchema
-from schemas.auth import JWTTokenUpdate
+from schemas.user import UserCreateSchema
+from schemas.auth import JWTTokenUpdateSchema
 from database.session import connector
 
 
 class UserRepository:
     def __init__(self, session: AsyncSession = Depends(connector.session_getter)):
         self._session = session
-
-    async def username_exists(self, username: str) -> bool:
-        stmt = select(User).where(User.username == username)
-        result: Result = await self._session.execute(stmt)
-        return bool(result.scalar())
 
     async def email_exists(self, email: str) -> bool:
         stmt = select(User).where(User.email == email)
@@ -32,32 +27,32 @@ class UserRepository:
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
-    async def create_user(self, user: UserSchema) -> None:
+    async def create_user(self, user: UserCreateSchema) -> None:
         new_user = User(**user.model_dump())
         self._session.add(new_user)
         await self._session.commit()
 
-    async def update_refresh_token_by_username(self, data: JWTTokenUpdate) -> None:
+    async def update_refresh_token_by_email(self, data: JWTTokenUpdateSchema) -> None:
         stmt = (
             update(User).
-            where(User.username == data.username).
+            where(User.email == data.email).
             values(refresh_token=data.refresh_token)
         )
         await self._session.execute(stmt)
         await self._session.commit()
 
-    async def get_token_by_username(self, username: str) -> str:
+    async def get_token_by_email(self, email: str) -> str:
         stmt = (
             select(User.refresh_token).
-            where(User.username == username)
+            where(User.email == email)
         )
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
-    async def delete_token(self, username: str):
+    async def delete_token_by_email(self, email: str):
         stmt = (
             update(User).
-            where(User.username == username).
+            where(User.email == email).
             values(refresh_token="")
         )
         await self._session.execute(stmt)
