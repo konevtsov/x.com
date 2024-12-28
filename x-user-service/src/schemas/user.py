@@ -11,13 +11,8 @@ class UserScheme(BaseModel):
     is_banned: bool
 
 
-class UserUpdateScheme(BaseModel):
+class UserUpdateRequestSchema(BaseModel):
     username: str
     name: str
     bio: str
     website: str
-
-
-class UserInScheme(BaseModel):
-    username: str
-    email: EmailStr
