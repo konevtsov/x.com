@@ -1,4 +1,3 @@
-# TODO: add function for building DSN
 from typing import Literal
 from pathlib import Path
 
