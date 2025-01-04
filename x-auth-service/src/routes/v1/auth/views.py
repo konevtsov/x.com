@@ -1,4 +1,5 @@
-from fastapi import Depends, APIRouter, status
+from fastapi import Depends, APIRouter, status, Request, Cookie
+from fastapi.responses import ORJSONResponse
 from fastapi.security import (
     HTTPBearer,
     HTTPAuthorizationCredentials,
@@ -9,12 +10,15 @@ from schemas.auth import (
     SignInRequestSchema,
     IntrospectResponseSchema,
     TokenResponseSchema,
+    SignInRequest,
 )
 from services.auth_service import AuthService
 
 router = APIRouter()
 
 http_bearer = HTTPBearer()
+
+REFRESH_TOKEN_ALIAS = "refresh_token"
 
 
 @router.post(
@@ -44,10 +48,30 @@ async def sign_up(
     },
 )
 async def sign_in(
-    request: SignInRequestSchema,
+    req: Request,
+    request: SignInRequest,
     auth_service: AuthService = Depends(AuthService),
 ):
-    return await auth_service.sign_in(request)
+    ip = req.client.host
+    request_schema = SignInRequestSchema(
+        email=request.email, password=request.password, ip=ip,
+    )
+    tokens_data = await auth_service.sign_in(request_schema)
+    response = ORJSONResponse(
+        content={
+            "data": {
+                "access_token": tokens_data.access_token,
+                "refresh_token": tokens_data.refresh_token,
+            }
+        }
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=tokens_data.refresh_token,
+        httponly=True,
+        secure=True,
+    )
+    return response
 
 
 @router.post(
@@ -60,11 +84,11 @@ async def sign_in(
     }
 )
 async def sign_out(
+    request: Request,
     auth_service: AuthService = Depends(AuthService),
-    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
 ):
-    jwt_token = credentials.credentials
-    await auth_service.sign_out(jwt_token)
+    refresh_token_uuid = request.cookies.get(REFRESH_TOKEN_ALIAS)
+    await auth_service.sign_out(refresh_token_uuid)
 
 
 @router.post(
@@ -79,10 +103,9 @@ async def sign_out(
 )
 async def refresh(
     auth_service: AuthService = Depends(AuthService),
-    credentials: HTTPAuthorizationCredentials = Depends(http_bearer),
+    refresh_token_uuid: str = Cookie(alias=REFRESH_TOKEN_ALIAS),
 ):
-    jwt_token = credentials.credentials
-    return await auth_service.refresh(jwt_token)
+    return await auth_service.refresh(refresh_token_uuid)
 
 
 @router.get(
