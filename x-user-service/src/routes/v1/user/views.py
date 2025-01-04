@@ -5,7 +5,7 @@ from services.user_service import UserService
 from .token_introspection import get_token_info_from_current_user
 from schemas.token import TokenIntrospectSchema
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(tags=["Users"])
 
 
 @router.put(
