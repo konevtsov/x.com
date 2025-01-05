@@ -1,6 +1,8 @@
 from fastapi import Depends
 
 from schemas.user import (
+    FullUserSchema,
+    PartialUserSchema,
     UserUpdateRequestSchema,
 )
 from repositories.user_repository import UserRepository
@@ -26,3 +28,12 @@ class UserService:
         if not user:
             raise UserNotFoundError
         await self._repository.update_user_by_email(user_update, email=user_token.email)
+
+    async def get_user_by_username(self, username: str, user_token: TokenIntrospectSchema):
+        user = await self._repository.get_user_by_username(username=username)
+        if not user:
+            raise UserNotFoundError
+        if user_token.email == user.email:
+            return FullUserSchema.model_validate(user)
+
+        return PartialUserSchema.model_validate(user)

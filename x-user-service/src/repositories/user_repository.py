@@ -32,3 +32,8 @@ class UserRepository:
         )
         await self._session.execute(stmt)
         await self._session.commit()
+
+    async def get_user_by_username(self, username: str):
+        stmt = select(User).where(User.username == username)
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
