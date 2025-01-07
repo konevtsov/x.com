@@ -33,3 +33,12 @@ class UserUpdateRequestSchema(BaseModel):
     name: str
     bio: str
     website: str
+
+
+class FollowRequestSchema(BaseModel):
+    username: str
+
+
+class FollowSchema(BaseModel):
+    followed_username: str
+    follower_username: str
