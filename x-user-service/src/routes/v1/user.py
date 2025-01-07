@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from schemas.user import UserUpdateRequestSchema, FollowRequestSchema, FollowSchema
+from schemas.user import UserUpdateRequestSchema, FollowRequestSchema, FollowSchema, UnfollowRequestSchema, \
+    UnfollowSchema
 from services.user_service import UserService
 from .token_introspection import get_token_info_from_current_user
 from schemas.token import TokenIntrospectSchema
@@ -31,8 +32,22 @@ async def follow(
         followed_username=user_token.username,
         follower_username=follow_request.username,
     )
-
     await user_service.follow(follow_schema=follow_schema)
+
+
+@router.post(
+    path="/unfollow"
+)
+async def unfollow(
+    unfollow_request: UnfollowRequestSchema,
+    user_token: TokenIntrospectSchema = Depends(get_token_info_from_current_user),
+    user_service: UserService = Depends(UserService),
+):
+    unfollow_schema = UnfollowSchema(
+        followed_username=user_token.username,
+        follower_username=unfollow_request.username,
+    )
+    await user_service.unfollow(unfollow_schema=unfollow_schema)
 
 
 @router.put(
