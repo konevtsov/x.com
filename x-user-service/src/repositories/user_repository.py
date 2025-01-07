@@ -53,3 +53,8 @@ class UserRepository:
         except IntegrityError:
             raise AlreadyFollowedError
         await self._session.commit()
+
+    async def unfollow_by_username(self, followed_id: int, follower_id: int):
+        stmt = delete(Follow).where(Follow.followed_id == followed_id).where(Follow.follower_id == follower_id)
+        await self._session.execute(stmt)
+        await self._session.commit()
