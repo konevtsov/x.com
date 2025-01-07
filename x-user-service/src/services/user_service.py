@@ -5,12 +5,14 @@ from schemas.user import (
     PartialUserSchema,
     UserUpdateRequestSchema,
     FollowSchema,
+    UnfollowSchema,
 )
 from repositories.user_repository import UserRepository
 from schemas.token import TokenIntrospectSchema
 from exceptions.user_exceptions import (
     UserNotFoundError,
     FollowYourselfError,
+    UnfollowYourselfError,
 )
 from dto.user import UserCreateDTO
 
@@ -48,3 +50,12 @@ class UserService:
         if not follower_id or not followed_id:
             raise UserNotFoundError
         await self._repository.follow_by_username(followed_id, follower_id)
+
+    async def unfollow(self, unfollow_schema: UnfollowSchema):
+        if unfollow_schema.followed_username == unfollow_schema.follower_username:
+            raise UnfollowYourselfError
+        followed_id = await self._repository.get_user_id_by_username(unfollow_schema.followed_username)
+        follower_id = await self._repository.get_user_id_by_username(unfollow_schema.follower_username)
+        if not follower_id or not followed_id:
+            raise UserNotFoundError
+        await self._repository.unfollow_by_username(followed_id, follower_id)
