@@ -1,7 +1,8 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, String
 
 from .base import Base
+from .follow import Follow
 
 
 class User(Base):
@@ -12,3 +13,6 @@ class User(Base):
     bio: Mapped[str] = mapped_column(String(160), nullable=True)
     website: Mapped[str] = mapped_column(String(100), nullable=True)
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    followers: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.followed_id", back_populates="followed_user")
+    following: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower_user")
