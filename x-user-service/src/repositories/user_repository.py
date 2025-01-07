@@ -47,7 +47,7 @@ class UserRepository:
         return result.scalar()
 
     async def follow_by_username(self, followed_id: int, follower_id: int):
-        stmt = insert(Follow).values(user_id=followed_id, follower_id=follower_id)
+        stmt = insert(Follow).values(followed_id=followed_id, follower_id=follower_id)
         try:
             await self._session.execute(stmt)
         except IntegrityError:
