@@ -39,6 +39,15 @@ class FollowRequestSchema(BaseModel):
     username: str
 
 
+class UnfollowRequestSchema(BaseModel):
+    username: str
+
+
 class FollowSchema(BaseModel):
+    followed_username: str
+    follower_username: str
+
+
+class UnfollowSchema(BaseModel):
     followed_username: str
     follower_username: str
