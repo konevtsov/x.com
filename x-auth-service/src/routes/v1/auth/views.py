@@ -102,9 +102,10 @@ async def sign_out(
     }
 )
 async def refresh(
+    request: Request,
     auth_service: AuthService = Depends(AuthService),
-    refresh_token_uuid: str = Cookie(alias=REFRESH_TOKEN_ALIAS),
 ):
+    refresh_token_uuid = request.cookies.get(REFRESH_TOKEN_ALIAS)
     return await auth_service.refresh(refresh_token_uuid)
 
 
