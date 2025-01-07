@@ -13,6 +13,11 @@ class FollowYourselfError(BaseExceptions):
     detail: str = "You can't follow yourself"
 
 
+class UnfollowYourselfError(BaseExceptions):
+    status_code: int = status.HTTP_409_CONFLICT
+    detail: str = "You can't unfollow yourself"
+
+
 class AlreadyFollowedError(BaseExceptions):
     status_code: int = status.HTTP_409_CONFLICT
     detail: str = "You already followed on this user"
