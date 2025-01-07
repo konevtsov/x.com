@@ -4,11 +4,13 @@ from schemas.user import (
     FullUserSchema,
     PartialUserSchema,
     UserUpdateRequestSchema,
+    FollowSchema,
 )
 from repositories.user_repository import UserRepository
 from schemas.token import TokenIntrospectSchema
 from exceptions.user_exceptions import (
     UserNotFoundError,
+    FollowYourselfError,
 )
 from dto.user import UserCreateDTO
 
@@ -37,3 +39,12 @@ class UserService:
             return FullUserSchema.model_validate(user)
 
         return PartialUserSchema.model_validate(user)
+
+    async def follow(self, follow_schema: FollowSchema):
+        if follow_schema.followed_username == follow_schema.follower_username:
+            raise FollowYourselfError
+        followed_id = await self._repository.get_user_id_by_username(follow_schema.followed_username)
+        follower_id = await self._repository.get_user_id_by_username(follow_schema.follower_username)
+        if not follower_id or not followed_id:
+            raise UserNotFoundError
+        await self._repository.follow_by_username(followed_id, follower_id)

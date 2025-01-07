@@ -1,13 +1,14 @@
 from fastapi import Depends
-from sqlalchemy import select, update, insert, delete, Result
+from sqlalchemy import select, update, insert, delete, Result, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import User
+from database.models import User, Follow
 from database.session import connector
 from schemas.user import (
-    UserUpdateRequestSchema,
+    UserUpdateRequestSchema, FollowSchema,
 )
 from dto.user import UserCreateDTO
+from exceptions.user_exceptions import UserNotFoundError
 
 
 class UserRepository:
@@ -37,3 +38,13 @@ class UserRepository:
         stmt = select(User).where(User.username == username)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
+
+    async def get_user_id_by_username(self, username: str):
+        stmt = select(User.id).where(User.username == username)
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
+
+    async def follow_by_username(self, followed_id: int, follower_id: int):
+        stmt = insert(Follow).values(user_id=followed_id, follower_id=follower_id)
+        await self._session.execute(stmt)
+        await self._session.commit()
