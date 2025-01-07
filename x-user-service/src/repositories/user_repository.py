@@ -1,3 +1,5 @@
+from sqlite3 import IntegrityError
+
 from fastapi import Depends
 from sqlalchemy import select, update, insert, delete, Result, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,7 +10,7 @@ from schemas.user import (
     UserUpdateRequestSchema, FollowSchema,
 )
 from dto.user import UserCreateDTO
-from exceptions.user_exceptions import UserNotFoundError
+from exceptions.user_exceptions import AlreadyFollowedError
 
 
 class UserRepository:
@@ -46,5 +48,8 @@ class UserRepository:
 
     async def follow_by_username(self, followed_id: int, follower_id: int):
         stmt = insert(Follow).values(user_id=followed_id, follower_id=follower_id)
-        await self._session.execute(stmt)
+        try:
+            await self._session.execute(stmt)
+        except IntegrityError:
+            raise AlreadyFollowedError
         await self._session.commit()
