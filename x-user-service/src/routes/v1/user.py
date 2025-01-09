@@ -29,8 +29,8 @@ async def follow(
     user_service: UserService = Depends(UserService),
 ):
     follow_schema = FollowSchema(
-        followed_username=user_token.username,
-        follower_username=follow_request.username,
+        followed_username=follow_request.username,
+        follower_username=user_token.username,
     )
     await user_service.follow(follow_schema=follow_schema)
 
@@ -44,8 +44,8 @@ async def unfollow(
     user_service: UserService = Depends(UserService),
 ):
     unfollow_schema = UnfollowSchema(
-        followed_username=user_token.username,
-        follower_username=unfollow_request.username,
+        followed_username=unfollow_request.username,
+        follower_username=user_token.username,
     )
     await user_service.unfollow(unfollow_schema=unfollow_schema)
 
