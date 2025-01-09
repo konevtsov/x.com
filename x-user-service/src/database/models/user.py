@@ -16,3 +16,11 @@ class User(Base):
 
     followers: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.followed_id", back_populates="followed_user")
     following: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower_user")
+
+    @property
+    def followers_count(self):
+        return len(self.followers)
+
+    @property
+    def followings_count(self):
+        return len(self.following)
