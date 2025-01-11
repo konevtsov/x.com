@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import Depends
 from sqlalchemy import select, update, insert, delete, Result, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -67,3 +65,8 @@ class UserRepository:
         stmt = delete(Follow).where(Follow.followed_id == followed_id).where(Follow.follower_id == follower_id)
         await self._session.execute(stmt)
         await self._session.commit()
+
+    async def get_user_followings(self, user_id: int):
+        stmt = select(User.username, User.bio).outerjoin(Follow, Follow.followed_id == User.id).where(Follow.follower_id == user_id)
+        result: Result = await self._session.execute(stmt)
+        return result.scalars().all()
