@@ -42,6 +42,13 @@ class UserService:
 
         return PartialUserSchema.model_validate(user)
 
+
+    async def get_followers_by_username(self, username: str):
+        user = await self._repository.get_user_by_username(username=username)
+        if not user:
+            raise UserNotFoundError
+        return await self._repository.get_user_followers(user_id=user.id)
+
     async def follow(self, follow_schema: FollowSchema):
         if follow_schema.followed_username == follow_schema.follower_username:
             raise FollowYourselfError
