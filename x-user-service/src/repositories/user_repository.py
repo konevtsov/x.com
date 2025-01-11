@@ -70,3 +70,8 @@ class UserRepository:
         stmt = select(User.username, User.bio).outerjoin(Follow, Follow.followed_id == User.id).where(Follow.follower_id == user_id)
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def get_user_followers(self, user_id: int):
+        stmt = select(User.username, User.bio).outerjoin(Follow, Follow.follower_id == User.id).where(Follow.followed_id == user_id)
+        result: Result = await self._session.execute(stmt)
+        return result.scalars().all()
