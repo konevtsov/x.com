@@ -10,6 +10,17 @@ router = APIRouter(tags=["Users"])
 
 
 @router.get(
+    path="/{username}/followings",
+)
+async def get_followings_by_username(
+    username: str,
+    user_token: TokenIntrospectSchema = Depends(get_token_info_from_current_user),
+    user_service: UserService = Depends(UserService),
+):
+    return await user_service.get_followings_by_username(username=username)
+
+
+@router.get(
     path="/{username}",
 )
 async def get_user_by_username(
