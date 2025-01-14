@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends
 
-from schemas.user import UserUpdateRequestSchema, FollowRequestSchema, FollowSchema, UnfollowRequestSchema, \
-    UnfollowSchema
+from schemas.user import (
+    UserUpdateRequestSchema,
+    FollowRequestSchema,
+    FollowSchema,
+    UnfollowRequestSchema,
+    UnfollowSchema,
+)
 from services.user_service import UserService
 from .token_introspection import get_token_info_from_current_user
 from schemas.token import TokenIntrospectSchema
