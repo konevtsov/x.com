@@ -43,7 +43,7 @@ class ApiPrefix(BaseModel):
 
 
 class AuthApi(BaseModel):
-    base_url: str = "http://localhost:8001/api/v1"
+    base_url: str = "http://localhost:8000/api/v1"
     introspect_path: str = "/auth/Introspect/"
 
     @property
