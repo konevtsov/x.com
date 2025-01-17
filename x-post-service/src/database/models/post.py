@@ -5,6 +5,6 @@ from .base import Base
 
 
 class Post(Base):
-    author_id: Mapped[int]
     author_username: Mapped[str] = mapped_column(String(32), unique=True)
-    content: Mapped[str] = mapped_column(String(280))
+    author_email: Mapped[str] = mapped_column(Text, unique=True)
+    text: Mapped[str] = mapped_column(String(280))
