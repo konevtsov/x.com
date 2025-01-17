@@ -17,9 +17,9 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class RunConfig(BaseModel):
-    title: str = "X.com"
+    title: str = "X.com Post"
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8003
 
 
 class CorsSettings(BaseModel):
