@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).parent.parent
 
 
 class RunConfig(BaseModel):
-    title: str = "X.com"
+    title: str = "X.com Auth"
     host: str = "127.0.0.1"
     port: int = 8000
 
