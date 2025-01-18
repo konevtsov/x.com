@@ -18,3 +18,12 @@ class PostCreateSchema(BaseModel):
     author_email: str
     author_username: str
     text: str = Field(max_length=280)
+
+
+class PostDeleteRequestSchema(BaseModel):
+    post_id: int
+
+
+class PostDeleteSchema(BaseModel):
+    post_id: int
+    author_email: str
