@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "x-auth-microservice"
+name = "x-auth-service"
 version = "0.1.0"
 description = ""
 authors = ["Egor Konevtsov <konevtsov.connect@gmail.com>"]
