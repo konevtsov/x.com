@@ -8,6 +8,17 @@ from .token_introspection import get_token_info_from_current_user
 router = APIRouter(tags=["Post"])
 
 
+@router.get(
+    "/{username}",
+)
+async def get_all_posts_by_username(
+    username: str,
+    user_token: str = Depends(get_token_info_from_current_user),
+    post_service: PostService = Depends(PostService),
+):
+    return await post_service.get_all_posts_by_username(username=username)
+
+
 @router.post(
     "/",
 )
