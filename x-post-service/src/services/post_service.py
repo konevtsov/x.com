@@ -23,3 +23,9 @@ class PostService:
         if post.author_email != post_delete.author_email:
             raise PermissionDeniedError
         await self._post_repository.delete_post_by_id(post_id=post_delete.post_id)
+
+    async def get_all_posts_by_username(self, username: str):
+        posts = await self._post_repository.get_all_posts_by_username(username=username)
+        if not posts:
+            raise PostNotFoundError
+        return posts
