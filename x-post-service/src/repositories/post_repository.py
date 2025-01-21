@@ -28,3 +28,8 @@ class PostRepository:
         stmt = delete(Post).where(Post.id == post_id)
         await self._session.execute(stmt)
         await self._session.commit()
+
+    async def get_all_posts_by_username(self, username: str):
+        stmt = select(Post).where(Post.author_username == username)
+        result: Result = await self._session.execute(stmt)
+        return result.scalars().all()
