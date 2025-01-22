@@ -1,5 +1,6 @@
 from fastapi import Depends
 from sqlalchemy import select, insert, delete, update, Result
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.session import connector
@@ -20,7 +21,7 @@ class PostRepository:
         await self._session.commit()
 
     async def get_post_by_id(self, post_id: int):
-        stmt = select(Post).where(Post.id == post_id)
+        stmt = select(Post).options(selectinload(Post.likes)).where(Post.id == post_id)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
@@ -30,6 +31,6 @@ class PostRepository:
         await self._session.commit()
 
     async def get_all_posts_by_username(self, username: str):
-        stmt = select(Post).where(Post.author_username == username)
+        stmt = select(Post).options(selectinload(Post.likes)).where(Post.author_username == username)
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
