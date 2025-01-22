@@ -1,13 +1,16 @@
-from pydantic import BaseModel, Field
+from datetime import datetime
+
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class Post(BaseModel):
-    author: str
+class PostSchema(BaseModel):
+    id: int
     author_username: str
     text: str = Field(max_length=280)
-    comment_count: int
-    like_count: int
-    views_count: int
+    likes_count: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PostCreateRequestSchema(BaseModel):
