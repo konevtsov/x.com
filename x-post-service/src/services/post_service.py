@@ -20,7 +20,7 @@ class PostService:
         await self._post_repository.create_post(post_create)
 
     async def delete_post(self, post_delete: PostDeleteSchema):
-        post = await self._post_repository.get_post_by_id(post_id=post_delete.post_id)
+        post: Post | None = await self._post_repository.get_post_by_id(post_id=post_delete.post_id)
         if not post:
             raise PostNotFoundError
         if post.author_email != post_delete.author_email:
