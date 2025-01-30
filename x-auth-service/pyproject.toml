@@ -14,7 +14,6 @@ sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
 asyncpg = "^0.29.0"
 bcrypt = "^4.2.0"
 pydantic-settings = "^2.6.0"
-pytest = "^8.3.3"
 alembic = "^1.13.3"
 pyjwt = {extras = ["crypto"], version = "^2.9.0"}
 aio-pika = "^9.5.1"
@@ -22,6 +21,7 @@ aio-pika = "^9.5.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
+pytest = "^8.3.4"
 
 [build-system]
 requires = ["poetry-core"]
