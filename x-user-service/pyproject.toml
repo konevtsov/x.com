@@ -12,15 +12,19 @@ fastapi = {version = "0.115.5", extras = ["all"]}
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
 asyncpg = "^0.30.0"
 pydantic-settings = "^2.6.1"
-pytest = "^8.3.3"
 alembic = "^1.14.0"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 aio-pika = "^9.5.3"
 aiohttp = "^3.11.10"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
+
+
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
+
 
 [build-system]
 requires = ["poetry-core"]
