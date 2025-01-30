@@ -64,6 +64,7 @@ class LoggingConfig(BaseModel):
 
 class DatabaseConfig(BaseModel):
     url: PostgresDsn
+    test_db_url: PostgresDsn
     echo: bool = False
     echo_pool: bool = False
     pool_size: int = 50
