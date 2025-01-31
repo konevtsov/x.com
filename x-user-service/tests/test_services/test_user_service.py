@@ -33,7 +33,7 @@ async def test_create_user(user_service, mock_user_repository):
 
 
 @pytest.mark.asyncio
-async def test_update_user_success(user_service, mock_user_repository):
+async def test_update_user_good(user_service, mock_user_repository):
     user_update = UserUpdateRequestSchema(
         username="test_username",
         name="test_name",
@@ -44,3 +44,18 @@ async def test_update_user_success(user_service, mock_user_repository):
     mock_user_repository.get_user_by_email.return_value = AsyncMock()
     await user_service.update_user(user_update, user_token)
     mock_user_repository.update_user_by_email.assert_awaited_once_with(user_update, email=user_token.email)
+
+
+@pytest.mark.asyncio
+async def test_update_user_bad(user_service, mock_user_repository):
+    user_update = UserUpdateRequestSchema(
+        username="test_username",
+        name="test_name",
+        bio="test_bio",
+        website="test_website",
+    )
+    user_token = TokenIntrospectSchema(email="test@example.com", username="test_username")
+    mock_user_repository.get_user_by_email.return_value = None
+    with pytest.raises(Exception):
+        await user_service.update_user(user_update, user_token)
+
