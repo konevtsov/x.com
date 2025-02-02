@@ -22,10 +22,24 @@ class UserRepository:
         self._session.add(new_user)
         await self._session.commit()
 
+    async def get_user_by_user_id(self, user_id: int) -> User | None:
+        stmt = select(User).where(User.id == user_id)
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
+
     async def get_user_by_email(self, email: str) -> User:
         stmt = select(User).where(User.email == email)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
+
+    async def update_user_by_user_id(self, user: UserUpdateRequestSchema, user_id: int) -> None:
+        stmt = (
+            update(User).
+            where(User.user_id == user_id).
+            values(**user.model_dump())
+        )
+        await self._session.execute(stmt)
+        await self._session.commit()
 
     async def update_user_by_email(self, user: UserUpdateRequestSchema, email: str) -> None:
         stmt = (
