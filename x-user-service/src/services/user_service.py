@@ -9,7 +9,7 @@ from schemas.user import (
 )
 from repositories.user_repository import UserRepository
 from schemas.token import TokenIntrospectSchema
-from exceptions.user_exceptions import (
+from src.exceptions.user_exceptions import (
     UserNotFoundError,
     FollowYourselfError,
     UnfollowYourselfError,
@@ -28,16 +28,16 @@ class UserService:
         await self._repository.create_user(user=user)
 
     async def update_user(self, user_update: UserUpdateRequestSchema, user_token: TokenIntrospectSchema):
-        user = await self._repository.get_user_by_email(email=user_token.email)
+        user = await self._repository.get_user_by_user_id(user_id=user_token.user_id)
         if not user:
             raise UserNotFoundError
-        await self._repository.update_user_by_email(user_update, email=user_token.email)
+        await self._repository.update_user_by_user_id(user_update, user_id=user_token.user_id)
 
     async def get_user_by_username(self, username: str, user_token: TokenIntrospectSchema):
         user = await self._repository.get_user_by_username(username=username)
         if not user:
             raise UserNotFoundError
-        if user_token.email == user.email:
+        if user_token.user_id == user.user_id:
             return FullUserSchema.model_validate(user)
 
         return PartialUserSchema.model_validate(user)
