@@ -34,8 +34,8 @@ class RefreshSessionRepository:
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
-    async def get_all_refresh_tokens_by_email(self, email: str):
-        stmt = select(RefreshSession.refresh_token).join(User).filter(User.email == email)
+    async def get_all_refresh_tokens_by_user_id(self, user_id: int):
+        stmt = select(RefreshSession.refresh_token).join(User).filter(User.id == user_id)
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
 
