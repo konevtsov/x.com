@@ -12,10 +12,10 @@ if TYPE_CHECKING:
 
 class Like(Base):
     post_id: Mapped[int] = mapped_column(Integer, ForeignKey("posts.id"))
-    author_email: Mapped[str] = mapped_column(Text)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
 
     post: Mapped["Post"] = relationship("Post", back_populates="likes")
 
     __table_args__ = (
-        UniqueConstraint("post_id", "author_email", name="unique_like"),
+        UniqueConstraint("post_id", "user_id", name="unique_like"),
     )
