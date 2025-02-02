@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, Text
+from sqlalchemy import String, Boolean, Text, Integer
 
 from .base import Base
 
@@ -11,8 +11,7 @@ if TYPE_CHECKING:
 
 
 class Post(Base):
-    author_username: Mapped[str] = mapped_column(String(32), unique=False)
-    author_email: Mapped[str] = mapped_column(Text, unique=False)
+    user_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
     text: Mapped[str] = mapped_column(String(280))
 
     likes: Mapped[list["Like"]] = relationship("Like", back_populates="post")
