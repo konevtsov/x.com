@@ -28,9 +28,8 @@ async def post_create(
     post_service: PostService = Depends(PostService),
 ):
     post_create_schema = PostCreateSchema(
-        author_email=user_token.email,
-        author_username=user_token.username,
-        text=post_create_req.text
+        user_id=user_token.user_id,
+        text=post_create_req.text,
     )
     await post_service.create_post(post_create_schema)
 
@@ -44,7 +43,7 @@ async def post_delete(
     post_service: PostService = Depends(PostService),
 ):
     post_delete_schema = PostDeleteSchema(
-        author_email=user_token.email,
+        user_id=user_token.user_id,
         post_id=post_delete_req.post_id,
     )
     await post_service.delete_post(post_delete_schema)

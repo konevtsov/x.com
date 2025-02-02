@@ -5,7 +5,6 @@ from pydantic import BaseModel, Field, ConfigDict
 
 class PostSchema(BaseModel):
     id: int
-    author_username: str
     text: str = Field(max_length=280)
     likes_count: int
     created_at: datetime
@@ -18,8 +17,7 @@ class PostCreateRequestSchema(BaseModel):
 
 
 class PostCreateSchema(BaseModel):
-    author_email: str
-    author_username: str
+    user_id: int
     text: str = Field(max_length=280)
 
 
@@ -28,5 +26,5 @@ class PostDeleteRequestSchema(BaseModel):
 
 
 class PostDeleteSchema(BaseModel):
+    user_id: int
     post_id: int
-    author_email: str

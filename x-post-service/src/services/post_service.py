@@ -23,7 +23,7 @@ class PostService:
         post: Post | None = await self._post_repository.get_post_by_id(post_id=post_delete.post_id)
         if not post:
             raise PostNotFoundError
-        if post.author_email != post_delete.author_email:
+        if post.user_id != post_delete.user_id:
             raise PermissionDeniedError
         await self._post_repository.delete_post_by_id(post_id=post_delete.post_id)
 
