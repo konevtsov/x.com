@@ -27,10 +27,11 @@ class UserRepository:
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
-    async def create_user(self, user: UserCreateSchema) -> None:
-        new_user = User(**user.model_dump())
-        self._session.add(new_user)
+    async def create_user(self, user: UserCreateSchema) -> int:
+        stmt = insert(User).values(**user.model_dump()).returning(User.id)
+        result: Result = await self._session.execute(stmt)
         await self._session.commit()
+        return result.scalar()
 
     async def update_refresh_token_by_email(self, data: JWTTokenUpdateSchema) -> None:
         stmt = (
