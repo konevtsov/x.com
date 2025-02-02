@@ -1,12 +1,8 @@
 from fastapi import HTTPException
 
 
-class BaseExceptions(HTTPException):
+class BaseException(HTTPException):
+    detail = None
 
-    def __init__(self, detail=None):
-        self.detail = detail
-        super().__init__(
-            status_code=self.status_code,
-            detail=self.detail,
-        )
-    
+    def __init__(self):
+        super().__init__(status_code=self.status_code, detail=self.detail)
