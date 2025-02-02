@@ -40,8 +40,7 @@ class TokenService:
 
     def create_access_token(self, data: TokenDataSchema) -> str:
         jwt_payload = {
-            "sub": data.email,
-            "username": data.username,
+            "sub": data.user_id,
         }
         return self.create_jwt(
             token_type=ACCESS_TOKEN_TYPE,
@@ -51,8 +50,7 @@ class TokenService:
 
     def create_refresh_token(self, data: TokenDataSchema) -> str:
         jwt_payload = {
-            "sub": data.email,
-            "username": data.username,
+            "sub": data.user_id,
         }
         return self.create_jwt(
             token_type=REFRESH_TOKEN_TYPE,
