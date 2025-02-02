@@ -56,6 +56,6 @@ async def test_update_user_bad(user_service, mock_user_repository):
     )
     user_token = TokenIntrospectSchema(email="test@example.com", username="test_username")
     mock_user_repository.get_user_by_email.return_value = None
-    with pytest.raises(Exception):
+    with pytest.raises(UserNotFoundError) as exc_info:
         await user_service.update_user(user_update, user_token)
-
+        assert exc_info.value.status_code == 404
