@@ -13,8 +13,8 @@ class FullUserSchema(BaseModel):
     website: Optional[str] = None
     is_banned: bool
     created_at: datetime
-    followers_count: Any
-    followings_count: Any
+    followers_count: int
+    followings_count: int
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -25,8 +25,8 @@ class PartialUserSchema(BaseModel):
     bio: Optional[str] = None
     website: Optional[str] = None
     created_at: datetime
-    followers_count: Any
-    followings_count: Any
+    followers_count: int
+    followings_count: int
 
     model_config = ConfigDict(from_attributes=True)
 
