@@ -31,11 +31,13 @@ def upgrade() -> None:
             ["followed_id"],
             ["users.id"],
             name=op.f("fk_follows_followed_id_users"),
+            ondelete="CASCADE",  # !Added manually
         ),
         sa.ForeignKeyConstraint(
             ["follower_id"],
             ["users.id"],
             name=op.f("fk_follows_follower_id_users"),
+            ondelete="CASCADE",  # !Added manually
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_follows")),
         sa.UniqueConstraint(
