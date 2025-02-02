@@ -1,7 +1,7 @@
 from fastapi import status
-from .base_exception import BaseExceptions
+from src.exceptions.base_exception import BaseException
 
 
-class InvalidTokenError(BaseExceptions):
-    status_code: int = status.HTTP_403_FORBIDDEN
+class InvalidTokenError(BaseException):
+    status_code: int = 403
     detail: str = "Invalid token"
