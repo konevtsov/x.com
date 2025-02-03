@@ -1,4 +1,3 @@
-import orjson
 from fastapi import Depends
 
 from repositories.post_repository import PostRepository
@@ -32,7 +31,7 @@ class PostService:
         if not posts:
             raise PostNotFoundError
 
-        validate_posts = {}
+        validate_posts = []
         for i in range(len(posts)):
-            validate_posts[i] = PostSchema.model_validate(posts[i])
+            validate_posts.append(PostSchema.model_validate(posts[i]).dict())
         return validate_posts
