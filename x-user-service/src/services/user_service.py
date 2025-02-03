@@ -9,7 +9,7 @@ from schemas.user import (
 )
 from repositories.user_repository import UserRepository
 from schemas.token import TokenIntrospectSchema
-from src.exceptions.user_exceptions import (
+from exceptions.user_exceptions import (
     UserNotFoundError,
     FollowYourselfError,
     UnfollowYourselfError,
