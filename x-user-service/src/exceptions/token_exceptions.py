@@ -1,5 +1,4 @@
-from fastapi import status
-from src.exceptions.base_exception import BaseException
+from .base_exception import BaseException
 
 
 class InvalidTokenError(BaseException):

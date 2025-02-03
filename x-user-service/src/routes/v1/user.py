@@ -57,7 +57,7 @@ async def follow(
 ):
     follow_schema = FollowSchema(
         followed_username=follow_request.username,
-        follower_username=user_token.username,
+        follower_id=user_token.user_id,
     )
     await user_service.follow(follow_schema=follow_schema)
 
@@ -72,7 +72,7 @@ async def unfollow(
 ):
     unfollow_schema = UnfollowSchema(
         followed_username=unfollow_request.username,
-        follower_username=user_token.username,
+        follower_id=user_token.user_id,
     )
     await user_service.unfollow(unfollow_schema=unfollow_schema)
 

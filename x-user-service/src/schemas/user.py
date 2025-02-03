@@ -48,9 +48,9 @@ class UnfollowRequestSchema(BaseModel):
 
 class FollowSchema(BaseModel):
     followed_username: str
-    follower_username: str
+    follower_id: int
 
 
 class UnfollowSchema(BaseModel):
     followed_username: str
-    follower_username: str
+    follower_id: int
