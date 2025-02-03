@@ -15,8 +15,12 @@ class User(Base):
     website: Mapped[str] = mapped_column(String(100), nullable=True)
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    followers: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.followed_id", back_populates="followed_user")
-    following: Mapped[list["Follow"]] = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower_user")
+    followers: Mapped[list["Follow"]] = relationship(
+        "Follow", foreign_keys="Follow.followed_id", back_populates="followed_user", cascade="all, delete-orphan",
+    )
+    following: Mapped[list["Follow"]] = relationship(
+        "Follow", foreign_keys="Follow.follower_id", back_populates="follower_user", cascade="all, delete-orphan",
+    )
 
     @property
     def followers_count(self):
