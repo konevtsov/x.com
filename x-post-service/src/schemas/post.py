@@ -18,6 +18,7 @@ class PostCreateRequestSchema(BaseModel):
 
 class PostCreateSchema(BaseModel):
     user_id: int
+    author_username: str
     text: str = Field(max_length=280)
 
 

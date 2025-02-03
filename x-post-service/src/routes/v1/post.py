@@ -29,6 +29,7 @@ async def post_create(
 ):
     post_create_schema = PostCreateSchema(
         user_id=user_token.user_id,
+        author_username=user_token.username,
         text=post_create_req.text,
     )
     await post_service.create_post(post_create_schema)
