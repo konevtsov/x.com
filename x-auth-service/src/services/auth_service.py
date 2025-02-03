@@ -72,7 +72,7 @@ class AuthService:
         if not self._password_service.validate_password(request.password, user.password):
             raise InvalidLoginPassword
 
-        token_data = TokenDataSchema(user_id=user.id)
+        token_data = TokenDataSchema(user_id=user.id, username=user.username)
         refresh_token_uuid = str(uuid.uuid4())
         refresh_token = self._token_service.create_refresh_token(token_data)
         access_token = self._token_service.create_access_token(token_data)
@@ -107,13 +107,14 @@ class AuthService:
         token_payload = self._token_service.get_token_payload(jwt_token)
         self._token_service.validate_token_type(token_payload, REFRESH_TOKEN_TYPE)
 
-        user_id = token_payload.get(TOKEN_SUBJECT_FIELD)
+        user_id: int = token_payload.get(TOKEN_SUBJECT_FIELD)
+        username: str = token_payload.get(TOKEN_USERNAME_FIELD)
         all_refresh_tokens = await self._refresh_session_repository.get_all_refresh_tokens_by_user_id(user_id=user_id)
 
         if not all_refresh_tokens or jwt_token not in all_refresh_tokens:
             raise Unauthorized
 
-        token_data = TokenDataSchema(user_id=user_id)
+        token_data = TokenDataSchema(user_id=user_id, username=username)
         access_token = self._token_service.create_access_token(token_data)
         refresh_token = self._token_service.create_refresh_token(token_data)
         await self._refresh_session_repository.update_refresh_token_by_uuid(
@@ -125,5 +126,6 @@ class AuthService:
         token_payload = self._token_service.get_token_payload(jwt_token)
         self._token_service.validate_token_type(token_payload, ACCESS_TOKEN_TYPE)
 
-        user_id = token_payload.get(TOKEN_SUBJECT_FIELD)
-        return IntrospectResponseSchema(user_id=user_id)
+        user_id: int = token_payload.get(TOKEN_SUBJECT_FIELD)
+        username: str = token_payload.get(TOKEN_USERNAME_FIELD)
+        return IntrospectResponseSchema(user_id=user_id, username=username)

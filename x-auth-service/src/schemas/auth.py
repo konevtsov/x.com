@@ -26,6 +26,7 @@ class SignInRequestSchema(BaseModel):
 
 class IntrospectResponseSchema(BaseModel):
     user_id: int
+    username: str
 
 
 class TokenResponseSchema(BaseModel):
@@ -41,6 +42,7 @@ class JWTTokenUpdateSchema(BaseModel):
 
 class TokenDataSchema(BaseModel):
     user_id: int
+    username: str
 
 
 class RefreshSessionSchema(BaseModel):
