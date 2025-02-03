@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 
 
 class Post(Base):
-    user_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    author_username: Mapped[str] = mapped_column(String, nullable=False)
     text: Mapped[str] = mapped_column(String(280))
 
     likes: Mapped[list["Like"]] = relationship("Like", back_populates="post")
