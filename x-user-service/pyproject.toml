@@ -16,6 +16,7 @@ alembic = "^1.14.0"
 uvicorn = {extras = ["standard"], version = "^0.32.0"}
 aio-pika = "^9.5.3"
 aiohttp = "^3.11.10"
+aiobotocore = "^2.19.0"
 
 
 [tool.poetry.group.dev.dependencies]
