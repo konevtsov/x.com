@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class Follow(Base):
-    followed_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    follower_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
+    followed_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    follower_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     followed_user: Mapped["User"] = relationship(
         "User", foreign_keys=[followed_id], back_populates="followers",
