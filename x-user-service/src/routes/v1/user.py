@@ -85,4 +85,10 @@ async def update_user(
     user_token: TokenIntrospectSchema = Depends(get_token_info_from_current_user),
     user_service: UserService = Depends(UserService),
 ):
-    await user_service.update_user(user_update, user_token)
+    user_update_schema = UserUpdateSchema(
+        username=user_update.username,
+        name=user_update.name,
+        bio=user_update.bio,
+        website=user_update.website,
+    )
+    await user_service.update_user(user_update_schema, user_token)
