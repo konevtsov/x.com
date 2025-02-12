@@ -1,5 +1,5 @@
 from fastapi import Depends
-from sqlalchemy import select, update, insert, delete, Result, text
+from sqlalchemy import select, update, insert, delete, Result, text, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import IntegrityError
@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from database.models import User, Follow
 from database.session import connector
 from schemas.user import (
-    UserUpdateRequestSchema, FollowSchema,
+    UserUpdateSchema,
 )
 from dto.user import UserCreateDTO
 from exceptions.user_exceptions import AlreadyFollowedError
@@ -23,7 +23,7 @@ class UserRepository:
         await self._session.commit()
 
     async def get_user_by_user_id(self, user_id: int) -> User | None:
-        stmt = select(User).where(User.id == user_id)
+        stmt = select(User).where(User.user_id == user_id)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
@@ -32,7 +32,7 @@ class UserRepository:
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
-    async def update_user_by_user_id(self, user: UserUpdateRequestSchema, user_id: int) -> None:
+    async def update_user_by_user_id(self, user: UserUpdateSchema, user_id: int) -> None:
         stmt = (
             update(User).
             where(User.user_id == user_id).
@@ -41,7 +41,7 @@ class UserRepository:
         await self._session.execute(stmt)
         await self._session.commit()
 
-    async def update_user_by_email(self, user: UserUpdateRequestSchema, email: str) -> None:
+    async def update_user_by_email(self, user: UserUpdateSchema, email: str) -> None:
         stmt = (
             update(User).
             where(User.email == email).
@@ -89,3 +89,19 @@ class UserRepository:
         stmt = select(User.username, User.bio).outerjoin(Follow, Follow.follower_id == User.id).where(Follow.followed_id == user_id)
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
+
+    async def get_username_exist_count(self, username: str):
+        stmt = select(func.count()).select_from(User).where(User.username == username)
+        result: Result = await self._session.execute(stmt)
+        return result.scalar()
+
+    async def add_avatar_url_by_user_id(self, user_id: int, avatar_url: str):
+        stmt = update(User).where(User.user_id == user_id).values(avatar_url=avatar_url)
+        await self._session.execute(stmt)
+        await self._session.commit()
+
+    async def delete_avatar_url_by_user_id(self, user_id: int):
+        stmt = update(User).values(avatar_url="").where(User.user_id == user_id)
+        # stmt = delete(User.avatar_url).where(User.user_id == user_id)
+        await self._session.execute(stmt)
+        await self._session.commit()
