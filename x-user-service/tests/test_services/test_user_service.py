@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock
 
 from services.user_service import UserService
 from schemas.token import TokenIntrospectSchema
-from schemas.user import UserUpdateRequestSchema, FollowSchema, UnfollowSchema
+from schemas.user import FollowSchema, UnfollowSchema, UserUpdateSchema
 from exceptions.user_exceptions import (
     UserNotFoundError,
     FollowYourselfError,
@@ -34,7 +34,7 @@ async def test_create_user(user_service, mock_user_repository):
 
 @pytest.mark.asyncio
 async def test_update_user_good(user_service, mock_user_repository):
-    user_update = UserUpdateRequestSchema(
+    user_update = UserUpdateSchema(
         username="test_username",
         name="test_name",
         bio="test_bio",
@@ -48,7 +48,7 @@ async def test_update_user_good(user_service, mock_user_repository):
 
 @pytest.mark.asyncio
 async def test_update_user_bad(user_service, mock_user_repository):
-    user_update = UserUpdateRequestSchema(
+    user_update = UserUpdateSchema(
         username="test_username",
         name="test_name",
         bio="test_bio",
