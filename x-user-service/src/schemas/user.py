@@ -1,4 +1,3 @@
-from typing import Any
 from typing import Optional
 from datetime import datetime
 
@@ -31,19 +30,11 @@ class PartialUserSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UserUpdateRequestSchema(BaseModel):
+class UserUpdateSchema(BaseModel):
     username: str
     name: str
     bio: str
     website: str
-
-
-class FollowRequestSchema(BaseModel):
-    username: str
-
-
-class UnfollowRequestSchema(BaseModel):
-    username: str
 
 
 class FollowSchema(BaseModel):
@@ -54,3 +45,16 @@ class FollowSchema(BaseModel):
 class UnfollowSchema(BaseModel):
     followed_username: str
     follower_id: int
+
+
+class AvatarUploadSchema(BaseModel):
+    content: bytes
+    file_extension: str
+
+
+class DeleteAvatarSchema(BaseModel):
+    user_id: int
+
+
+class GetAvatarSchema(BaseModel):
+    username: str
