@@ -27,10 +27,12 @@ class UserService:
     async def create_user(self, user: UserCreateDTO):
         await self._repository.create_user(user=user)
 
-    async def update_user(self, user_update: UserUpdateRequestSchema, user_token: TokenIntrospectSchema):
+    async def update_user(self, user_update: UserUpdateSchema, user_token: TokenIntrospectSchema):
         user = await self._repository.get_user_by_user_id(user_id=user_token.user_id)
         if not user:
             raise UserNotFoundError
+        if await self._repository.get_username_exist_count(username=user_update.username) > 1:
+            raise UsernameAlreadyExistsError
         await self._repository.update_user_by_user_id(user_update, user_id=user_token.user_id)
 
     async def get_user_by_username(self, username: str, user_token: TokenIntrospectSchema):
