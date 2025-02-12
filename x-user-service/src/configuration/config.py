@@ -88,6 +88,13 @@ class RMQConfig(BaseModel):
     url: str = f"amqp://{user}:{password}@{host}:{port}/"
 
 
+class S3Config(BaseModel):
+    access_key: str
+    secret_key: str
+    endpoint_url: str
+    bucket_name: str
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -104,6 +111,7 @@ class Settings(BaseSettings):
     rmq: RMQConfig = RMQConfig()
     auth_api: AuthApi = AuthApi()
     api: ApiPrefix = ApiPrefix()
+    s3: S3Config
     db: DatabaseConfig
 
 
