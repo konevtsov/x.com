@@ -3,9 +3,12 @@ from fastapi import Depends
 from schemas.user import (
     FullUserSchema,
     PartialUserSchema,
-    UserUpdateRequestSchema,
     FollowSchema,
     UnfollowSchema,
+    UserUpdateSchema,
+    AvatarUploadSchema,
+    DeleteAvatarSchema,
+    GetAvatarSchema,
 )
 from repositories.user_repository import UserRepository
 from schemas.token import TokenIntrospectSchema
@@ -13,8 +16,14 @@ from exceptions.user_exceptions import (
     UserNotFoundError,
     FollowYourselfError,
     UnfollowYourselfError,
+    UsernameAlreadyExistsError,
 )
 from dto.user import UserCreateDTO
+from services.s3_service import s3_service
+
+
+AVATARS_FOLDER_NAME = "profile_images"
+ORIGINAL_AVATAR_FILENAME = "original"
 
 
 class UserService:
@@ -71,3 +80,28 @@ class UserService:
         if not unfollow_schema.follower_id or not followed_id:
             raise UserNotFoundError
         await self._repository.unfollow_by_username(followed_id, unfollow_schema.follower_id)
+
+    async def upload_avatar(self, upload_schema: AvatarUploadSchema, user_token: TokenIntrospectSchema):
+        key = str(user_token.user_id)
+        destination_path = f"{AVATARS_FOLDER_NAME}/{key}/{ORIGINAL_AVATAR_FILENAME}.{upload_schema.file_extension}"
+        await self._repository.add_avatar_url_by_user_id(user_id=user_token.user_id, avatar_url=destination_path)
+
+        await s3_service.upload_file(
+            destination_path=destination_path,
+            content=upload_schema.content,
+        )
+
+    async def get_avatar_by_username(self, get_avatar_schema: GetAvatarSchema):
+        user = await self._repository.get_user_by_username(username=get_avatar_schema.username)
+        if not user.avatar_url:
+            raise UserNotFoundError  # TODO: Add new exception
+        data = await s3_service.get_file(key=user.avatar_url)
+
+        return data
+
+    async def delete_avatar(self, remove_schema: DeleteAvatarSchema):
+        user = await self._repository.get_user_by_user_id(user_id=remove_schema.user_id)
+        if not user.avatar_url:
+            raise UserNotFoundError  # TODO: Add new exception
+        await s3_service.delete_file(key=user.avatar_url)
+        await self._repository.delete_avatar_url_by_user_id(user_id=remove_schema.user_id)
