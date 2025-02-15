@@ -6,6 +6,11 @@ class UserNotFoundError(BaseException):
     detail: str = "User not found"
 
 
+class AvatarNotFoundError(BaseException):
+    status_code: int = 404
+    detail: str = "Avatar not found"
+
+
 class UsernameAlreadyExistsError(BaseException):
     status_code: int = 409
     detail: str = "Username already exists"

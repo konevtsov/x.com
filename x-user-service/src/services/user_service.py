@@ -17,6 +17,7 @@ from exceptions.user_exceptions import (
     FollowYourselfError,
     UnfollowYourselfError,
     UsernameAlreadyExistsError,
+    AvatarNotFoundError,
 )
 from dto.user import UserCreateDTO
 from services.s3_service import s3_service
@@ -94,7 +95,7 @@ class UserService:
     async def get_avatar_by_username(self, get_avatar_schema: GetAvatarSchema):
         user = await self._repository.get_user_by_username(username=get_avatar_schema.username)
         if not user.avatar_url:
-            raise UserNotFoundError  # TODO: Add new exception
+            raise AvatarNotFoundError
         data = await s3_service.get_file(key=user.avatar_url)
 
         return data
@@ -102,6 +103,6 @@ class UserService:
     async def delete_avatar(self, remove_schema: DeleteAvatarSchema):
         user = await self._repository.get_user_by_user_id(user_id=remove_schema.user_id)
         if not user.avatar_url:
-            raise UserNotFoundError  # TODO: Add new exception
+            raise AvatarNotFoundError
         await s3_service.delete_file(key=user.avatar_url)
         await self._repository.delete_avatar_url_by_user_id(user_id=remove_schema.user_id)
