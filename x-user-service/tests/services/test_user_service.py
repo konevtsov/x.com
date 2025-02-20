@@ -7,6 +7,7 @@ from schemas.token import TokenIntrospectSchema
 from schemas.user import FollowSchema, UnfollowSchema, UserUpdateSchema
 from exceptions.user_exceptions import (
     UserNotFoundError,
+    UsernameAlreadyExistsError,
     FollowYourselfError,
     UnfollowYourselfError,
     AlreadyFollowedError,
@@ -42,6 +43,7 @@ async def test_update_user_good(user_service, mock_user_repository):
     )
     user_token = TokenIntrospectSchema(user_id=1, username="test_username")
     mock_user_repository.get_user_by_user_id.return_value = AsyncMock()
+    mock_user_repository.get_username_exist_count = AsyncMock(return_value=1)
     await user_service.update_user(user_update, user_token)
     mock_user_repository.update_user_by_user_id.assert_awaited_once_with(user_update, user_id=1)
 
@@ -56,6 +58,7 @@ async def test_update_user_bad(user_service, mock_user_repository):
     )
     user_token = TokenIntrospectSchema(user_id=1, username="test_username")
     mock_user_repository.get_user_by_user_id.return_value = None
+    mock_user_repository.get_username_exist_count.return_value = 2
     with pytest.raises(UserNotFoundError) as exc_info:
         await user_service.update_user(user_update, user_token)
-        assert exc_info.value.status_code == 404
+    assert exc_info.value.status_code == 404
