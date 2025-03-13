@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    hostname: postgres
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    env_file:
+      - src/.env
+    networks:
+      - user-service-network
+
+  app:
+    build: .
+    container_name: user-service
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - 8002:8002
+    networks:
+      - user-service-network
+
+networks:
+  user-service-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
