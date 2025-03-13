@@ -85,7 +85,9 @@ class RMQConfig(BaseModel):
     host: str = "localhost"
     port: int = 5672
 
-    url: str = f"amqp://{user}:{password}@{host}:{port}/"
+    @property
+    def url(self) -> str:
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}/"
 
 
 class S3Config(BaseModel):
