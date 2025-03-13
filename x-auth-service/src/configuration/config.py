@@ -67,7 +67,9 @@ class RMQConfig(BaseModel):
     host: str = "localhost"
     port: int = 5672
 
-    url: str = f"amqp://{user}:{password}@{host}:{port}/"
+    @property
+    def url(self):
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}"
 
 
 class DatabaseConfig(BaseModel):
@@ -96,6 +98,7 @@ class Settings(BaseSettings):
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
+        extra="allow",
     )
     run: RunConfig = RunConfig()
     cors: CorsSettings = CorsSettings()
