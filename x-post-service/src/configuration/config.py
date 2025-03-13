@@ -51,6 +51,13 @@ class AuthApi(BaseModel):
         return self.base_url + self.introspect_path
 
 
+class S3Config(BaseModel):
+    access_key: str
+    secret_key: str
+    endpoint_url: str
+    bucket_name: str
+
+
 class LoggingConfig(BaseModel):
     log_level: Literal[
         "DEBUG",
@@ -95,6 +102,7 @@ class Settings(BaseSettings):
     api: ApiPrefix = ApiPrefix()
     auth_api: AuthApi = AuthApi()
     logging: LoggingConfig = LoggingConfig()
+    s3: S3Config
     db: DatabaseConfig
 
 
