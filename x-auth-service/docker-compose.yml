@@ -25,6 +25,7 @@ services:
 networks:
   auth-service-network:
     driver: bridge
+    name: auth-service-network
 
 volumes:
   postgres-data:
