@@ -25,6 +25,7 @@ services:
 networks:
   user-service-network:
     driver: bridge
+    name: user-service-network
 
 volumes:
   postgres-data:
