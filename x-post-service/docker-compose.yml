@@ -2,6 +2,7 @@ services:
   postgres:
     image: postgres:17-alpine
     hostname: postgres
+    container_name: post-service-db
     restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
