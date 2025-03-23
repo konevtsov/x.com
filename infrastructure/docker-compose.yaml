@@ -1,4 +1,4 @@
-version: "3.5"
+version: "3.8"
 
 services:
   rabbitmq:
@@ -15,14 +15,12 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
 
   minio:
-    image: minio/minio
-    entrypoint: sh
-    command: >
-      -c 'mkdir -p /data/test-bucket 
-      && minio server /data'
+    image: bitnami/minio:latest
+    container_name: minio
+    hostname: minio
     ports:
-      - 9000:9000
-      - 9001:9001
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: 'USERNAME'
       MINIO_ROOT_PASSWORD: 'PASSWORD'
