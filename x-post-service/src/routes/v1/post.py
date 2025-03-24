@@ -10,6 +10,10 @@ router = APIRouter(tags=["Post"])
 
 @router.get(
     "/{username}",
+    status_code=200,
+    responses={
+        404: {"description": "User has no posts"}
+    },
 )
 async def get_all_posts_by_username(
     username: str,
@@ -32,6 +36,10 @@ async def get_post_by_id(
 
 @router.post(
     "/",
+    status_code=201,
+    responses={
+        201: {"description": "Post created successfully"},
+    }
 )
 async def post_create(
     post_create_req: PostCreateRequestSchema,
