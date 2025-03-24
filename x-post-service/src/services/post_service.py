@@ -35,3 +35,10 @@ class PostService:
         for i in range(len(posts)):
             validate_posts.append(PostSchema.model_validate(posts[i]).dict())
         return validate_posts
+
+    async def get_post_by_id(self, post_id: int):
+        post: Post | None = await self._post_repository.get_post_by_id(post_id=post_id)
+        if not post:
+            raise PostNotFoundError
+
+        return PostSchema.model_validate(post)

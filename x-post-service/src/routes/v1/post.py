@@ -19,6 +19,17 @@ async def get_all_posts_by_username(
     return await post_service.get_all_posts_by_username(username=username)
 
 
+@router.get(
+    "/status/{post_id}",
+)
+async def get_post_by_id(
+    post_id: int,
+    user_token: str = Depends(get_token_info_from_current_user),
+    post_service: PostService = Depends(PostService),
+):
+    return await post_service.get_post_by_id(post_id=post_id)
+
+
 @router.post(
     "/",
 )
