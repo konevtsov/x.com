@@ -1,4 +1,4 @@
-FROM python:3.12-alpine as builder
+FROM python:3.12-alpine AS builder
 
 LABEL org.opencontainers.image.authors="konevsov.connect@gmail.com"
 
@@ -18,7 +18,7 @@ COPY poetry.lock pyproject.toml ./
 RUN --mount=type=cache,target=$POETRY_CACHE_DIR poetry install --no-dev
 
 
-FROM python:3.12-alpine as runtime
+FROM python:3.12-alpine AS runtime
 
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
