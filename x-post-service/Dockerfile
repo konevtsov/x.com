@@ -26,8 +26,11 @@ ENV VIRTUAL_ENV=/app/.venv \
 WORKDIR /app
 
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-COPY . .
+COPY ./src .
+
+RUN chmod +x prestart.sh
 
 EXPOSE 8002
 
-ENTRYPOINT ["python", "src/main.py"]
+ENTRYPOINT ["prestart.sh"]
+ENTRYPOINT ["python", "main.py"]
