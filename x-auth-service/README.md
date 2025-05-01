@@ -16,7 +16,7 @@ Technologies such as:
 ### 1. Token issuance
 Create directory for private and public key
 ```shell
-mkdir src/certs && cd crs/certs
+mkdir src/certs && cd src/certs
 ```
 Generate an RSA private key, of size 2048
 ```shell
