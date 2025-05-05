@@ -29,13 +29,8 @@ jobs:
               run: |
                   poetry install --all-extras
 
-            - name: Run ruff for tests
-              uses: astral-sh/ruff-action@v1
-              with:
-                  src: "./tests"
-
             - name: Ruff for src
               run: ruff check --fix
 
-            - name: Format
+            - name: Ruff Format
               run: ruff format
