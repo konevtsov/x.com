@@ -1,4 +1,4 @@
-import asyncio
+from typing import Any, AsyncGenerator
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -27,6 +27,6 @@ async def prepare_database():
 
 
 @pytest.fixture(scope="module")
-async def session() -> AsyncSession:
+async def session() -> AsyncGenerator[AsyncSession, Any]:
     async with test_db_connector.session_factory() as session:
         yield session
