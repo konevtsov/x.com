@@ -12,7 +12,6 @@ Technologies such as:
 
 # Getting started
 
-
 ### 1. Token issuance
 Create directory for private and public key
 ```shell
