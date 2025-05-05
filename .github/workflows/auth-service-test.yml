@@ -3,9 +3,9 @@ on:
   push:
     paths:
       - 'x-auth-service/**'
-    pull_requests:
-      paths:
-        - 'x-auth-service/**'
+  pull_request:
+    paths:
+      - 'x-auth-service/**'
 jobs:
     lint:
         name: "Run linters"
@@ -15,7 +15,7 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
-                  python-version: "3.13.1"
+                  python-version: "3.12.3"
             - name: Install poetry
               run: |
                 python -m pip install --upgrade pip poetry==1.8.3 
