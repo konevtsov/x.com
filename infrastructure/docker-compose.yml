@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -13,6 +11,8 @@ services:
       RABBITMQ_DEFAULT_PASS: "guest"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - x.com-network
 
   minio:
     image: bitnami/minio:latest
@@ -26,7 +26,12 @@ services:
       MINIO_ROOT_PASSWORD: 'PASSWORD'
       MINIO_ADDRESS: ':9000'
       MINIO_CONSOLE_ADDRESS: ':9001'
+    networks:
+      - x.com-network
 
+networks:
+  x.com-network:
+    external: true
 
 volumes:
   rabbitmq-data:

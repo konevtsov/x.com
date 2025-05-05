@@ -21,11 +21,14 @@ services:
       - "8002:8002"
     networks:
       - user-service-network
+      - x.com-network
 
 networks:
   user-service-network:
     driver: bridge
     name: user-service-network
+  x.com-network:
+    external: true
 
 volumes:
   postgres-data:

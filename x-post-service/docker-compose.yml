@@ -21,11 +21,14 @@ services:
       - "8003:8003"
     networks:
       - post-service-network
+      - x.com-network
 
 networks:
   post-service-network:
     driver: bridge
     name: post-service-network
+  x.com-network:
+    external: true
 
 volumes:
   postgres-data:

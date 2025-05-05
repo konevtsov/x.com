@@ -32,5 +32,5 @@ RUN chmod +x prestart.sh
 
 EXPOSE 8002
 
-ENTRYPOINT ["prestart.sh"]
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["./prestart.sh"]
+CMD ["python", "main.py"]
