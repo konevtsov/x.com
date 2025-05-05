@@ -1,4 +1,4 @@
-name: lint
+name: x-auth-service-testing
 on:
   push:
     paths:
