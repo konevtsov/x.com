@@ -22,7 +22,7 @@ jobs:
                 poetry config virtualenvs.create false --local
             - name: Install dependencies
               run: |
-                  run: poetry install --all-extras
+                  poetry install --all-extras
 
             - name: Run ruff for tests
               uses: astral-sh/ruff-action@v1
