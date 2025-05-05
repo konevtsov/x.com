@@ -6,6 +6,11 @@ on:
   pull_request:
     paths:
       - 'x-auth-service/**'
+
+defaults:
+  run:
+    working-directory: x-auth-service
+    
 jobs:
     lint:
         name: "Run linters"
