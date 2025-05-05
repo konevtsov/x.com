@@ -9,7 +9,6 @@ Technologies such as:
 - Uvicorn
 
 ![image](https://github.com/user-attachments/assets/2e0c5ac6-c914-4261-ac92-2855ec2fa996)
-
 # Getting started
 
 ### 1. Token issuance
