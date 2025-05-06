@@ -4,13 +4,12 @@ from fastapi import Depends
 from jwt.exceptions import InvalidTokenError
 
 from configuration.config import settings
+from exceptions.auth_exceptions import (
+    InvalidToken,
+    InvalidTokenType,
+)
 from schemas.auth import TokenDataSchema
 from services.jwt_service import JWTService
-from exceptions.auth_exceptions import (
-    InvalidTokenType,
-    InvalidToken,
-)
-
 
 TOKEN_TYPE_FIELD = "type"
 ACCESS_TOKEN_TYPE = "access"
@@ -63,8 +62,8 @@ class TokenService:
     def get_token_payload(self, token: str) -> dict:
         try:
             payload = self._jwt_service.decode_jwt(token=token)
-        except InvalidTokenError:
-            raise InvalidToken
+        except InvalidTokenError as exc:
+            raise InvalidToken from exc
         return payload
 
     def validate_token_type(self, payload: dict, token_type: str) -> bool:

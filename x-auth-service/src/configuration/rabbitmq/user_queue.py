@@ -2,9 +2,9 @@ from typing import Any
 
 import aio_pika
 
-from .base import BaseMQ
 from configuration.config import settings
 
+from .base import BaseMQ
 
 MQ_USER_EXCHANGE_NAME = "user"
 MQ_USER_REGISTER_ROUTING_KEY = ".signup"

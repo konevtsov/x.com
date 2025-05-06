@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import Boolean, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, Text
 
 from .base import Base
 
@@ -15,4 +15,8 @@ class User(Base):
     password: Mapped[str] = mapped_column(Text, unique=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    refresh_sessions: Mapped[list["RefreshSession"]] = relationship("RefreshSession", back_populates="user", cascade="all, delete-orphan")
+    refresh_sessions: Mapped[list["RefreshSession"]] = relationship(
+        "RefreshSession",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

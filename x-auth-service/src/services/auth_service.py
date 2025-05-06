@@ -2,36 +2,37 @@ import uuid
 
 from fastapi import Depends
 
-from repositories.refresh_session_repository import RefreshSessionRepository
-from .password_service import PasswordService
-from repositories.user import UserRepository
-from .token_service import (
-    TokenService,
-    REFRESH_TOKEN_TYPE,
-    ACCESS_TOKEN_TYPE,
-    TOKEN_SUBJECT_FIELD,
-    TOKEN_USERNAME_FIELD,
-)
-from schemas.auth import (
-    SignUpRequestSchema,
-    SignInRequestSchema,
-    IntrospectResponseSchema,
-    JWTTokenUpdateSchema,
-    TokenDataSchema,
-    TokenResponseSchema, RefreshSessionSchema,
+from configuration.rabbitmq.user_queue import (
+    MQ_USER_REGISTER_ROUTING_KEY,
+    user_mq,
 )
 from dto.user import UserCreateDTO
-
-from schemas.user import UserCreateSchema
 from exceptions.auth_exceptions import (
-    UserAlreadyExists,
-    UserNotFound,
     InvalidLoginPassword,
     Unauthorized,
+    UserAlreadyExists,
+    UserNotFound,
 )
-from configuration.rabbitmq.user_queue import (
-    user_mq,
-    MQ_USER_REGISTER_ROUTING_KEY,
+from repositories.refresh_session_repository import RefreshSessionRepository
+from repositories.user import UserRepository
+from schemas.auth import (
+    IntrospectResponseSchema,
+    JWTTokenUpdateSchema,
+    RefreshSessionSchema,
+    SignInRequestSchema,
+    SignUpRequestSchema,
+    TokenDataSchema,
+    TokenResponseSchema,
+)
+from schemas.user import UserCreateSchema
+
+from .password_service import PasswordService
+from .token_service import (
+    ACCESS_TOKEN_TYPE,
+    REFRESH_TOKEN_TYPE,
+    TOKEN_SUBJECT_FIELD,
+    TOKEN_USERNAME_FIELD,
+    TokenService,
 )
 
 
@@ -77,7 +78,10 @@ class AuthService:
         refresh_token = self._token_service.create_refresh_token(token_data)
         access_token = self._token_service.create_access_token(token_data)
         refresh_session_schema = RefreshSessionSchema(
-            user_id=user.id, refresh_token_uuid=refresh_token_uuid, refresh_token=refresh_token, ip=request.ip,
+            user_id=user.id,
+            refresh_token_uuid=refresh_token_uuid,
+            refresh_token=refresh_token,
+            ip=request.ip,
         )
         if len(await self._refresh_session_repository.get_all_sessions_by_user_id(user_id=user.id)) >= 5:
             await self._refresh_session_repository.drop_all_sessions(user_id=user.id)

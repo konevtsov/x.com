@@ -1,13 +1,10 @@
-import uuid
-from uuid import UUID
-
 from fastapi import Depends
-from sqlalchemy import Result, select, update, insert, delete
+from sqlalchemy import Result, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.session import connector
-from schemas.auth import RefreshSessionSchema, JWTTokenUpdateSchema
 from database.models import RefreshSession, User
+from database.session import connector
+from schemas.auth import JWTTokenUpdateSchema, RefreshSessionSchema
 
 
 class RefreshSessionRepository:

@@ -1,11 +1,11 @@
 from fastapi import Depends
-from sqlalchemy import Result, select, update, insert, delete
+from sqlalchemy import Result, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.models import User
-from schemas.user import UserCreateSchema
-from schemas.auth import JWTTokenUpdateSchema
 from database.session import connector
+from schemas.auth import JWTTokenUpdateSchema
+from schemas.user import UserCreateSchema
 
 
 class UserRepository:
@@ -34,27 +34,16 @@ class UserRepository:
         return result.scalar()
 
     async def update_refresh_token_by_email(self, data: JWTTokenUpdateSchema) -> None:
-        stmt = (
-            update(User).
-            where(User.email == data.email).
-            values(refresh_token=data.refresh_token)
-        )
+        stmt = update(User).where(User.email == data.email).values(refresh_token=data.refresh_token)
         await self._session.execute(stmt)
         await self._session.commit()
 
     async def get_token_by_email(self, email: str) -> str:
-        stmt = (
-            select(User.refresh_token).
-            where(User.email == email)
-        )
+        stmt = select(User.refresh_token).where(User.email == email)
         result: Result = await self._session.execute(stmt)
         return result.scalar()
 
     async def delete_token_by_email(self, email: str):
-        stmt = (
-            update(User).
-            where(User.email == email).
-            values(refresh_token="")
-        )
+        stmt = update(User).where(User.email == email).values(refresh_token="")
         await self._session.execute(stmt)
         await self._session.commit()

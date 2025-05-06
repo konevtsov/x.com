@@ -5,5 +5,5 @@ __all__ = (
 )
 
 from .base import Base
-from .user import User
 from .refresh_session import RefreshSession
+from .user import User

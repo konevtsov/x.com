@@ -1,16 +1,16 @@
-from fastapi import Depends, APIRouter, status, Request, Cookie
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import ORJSONResponse
 from fastapi.security import (
-    HTTPBearer,
     HTTPAuthorizationCredentials,
+    HTTPBearer,
 )
 
 from schemas.auth import (
-    SignUpRequestSchema,
-    SignInRequestSchema,
     IntrospectResponseSchema,
-    TokenResponseSchema,
     SignInRequest,
+    SignInRequestSchema,
+    SignUpRequestSchema,
+    TokenResponseSchema,
 )
 from services.auth_service import AuthService
 
@@ -27,7 +27,7 @@ REFRESH_TOKEN_ALIAS = "refresh_token"
     summary="Sign up new account",
     responses={
         201: {"description": "User created successfully"},
-    }
+    },
 )
 async def sign_up(
     request: SignUpRequestSchema,
@@ -54,7 +54,9 @@ async def sign_in(
 ):
     ip = req.client.host
     request_schema = SignInRequestSchema(
-        email=request.email, password=request.password, ip=ip,
+        email=request.email,
+        password=request.password,
+        ip=ip,
     )
     tokens_data = await auth_service.sign_in(request_schema)
     response = ORJSONResponse(
@@ -81,7 +83,7 @@ async def sign_in(
     responses={
         401: {"description": "Invalid token type"},
         403: {"description": "Not authorized"},
-    }
+    },
 )
 async def sign_out(
     request: Request,
@@ -99,7 +101,7 @@ async def sign_out(
     response_model_exclude_none=True,
     responses={
         401: {"description": "User is not authorized"},
-    }
+    },
 )
 async def refresh(
     request: Request,
@@ -117,7 +119,7 @@ async def refresh(
     responses={
         200: {"model": IntrospectResponseSchema},
         401: {"description": "User is not authorized"},
-    }
+    },
 )
 async def introspect(
     auth_service: AuthService = Depends(AuthService),

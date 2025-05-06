@@ -1,11 +1,12 @@
-from typing import Any, AsyncGenerator
+from collections.abc import AsyncGenerator
+from typing import Any
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.configuration.config import settings
 from src.database.models import Base
 from src.database.session import Connector
-from src.configuration.config import settings
 
 test_db_connector = Connector(
     url=str(settings.db.test_db_url),
@@ -16,7 +17,7 @@ test_db_connector = Connector(
 )
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 async def prepare_database():
     async with test_db_connector.engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
