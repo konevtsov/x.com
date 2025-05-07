@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends
 from schemas.post import PostCreateRequestSchema, PostCreateSchema, PostDeleteRequestSchema, PostDeleteSchema
 from schemas.token import TokenIntrospectSchema
 from services.post_service import PostService
+
 from .token_introspection import get_token_info_from_current_user
 
 router = APIRouter(tags=["Post"])
@@ -11,9 +12,7 @@ router = APIRouter(tags=["Post"])
 @router.get(
     "/{username}",
     status_code=200,
-    responses={
-        404: {"description": "User has no posts"}
-    },
+    responses={404: {"description": "User has no posts"}},
 )
 async def get_all_posts_by_username(
     username: str,
@@ -39,7 +38,7 @@ async def get_post_by_id(
     status_code=201,
     responses={
         201: {"description": "Post created successfully"},
-    }
+    },
 )
 async def post_create(
     post_create_req: PostCreateRequestSchema,

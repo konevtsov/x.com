@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey, Integer, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, Text, Integer, ForeignKey, UniqueConstraint
 
 from .base import Base
-
 
 if TYPE_CHECKING:
     from .post import Post
@@ -16,6 +15,4 @@ class Like(Base):
 
     post: Mapped["Post"] = relationship("Post", back_populates="likes")
 
-    __table_args__ = (
-        UniqueConstraint("post_id", "user_id", name="unique_like"),
-    )
+    __table_args__ = (UniqueConstraint("post_id", "user_id", name="unique_like"),)

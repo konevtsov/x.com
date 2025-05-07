@@ -1,10 +1,10 @@
 from fastapi import Depends
-from sqlalchemy import select, insert, delete, update, Result
-from sqlalchemy.orm import selectinload
+from sqlalchemy import Result, delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from database.session import connector
 from database.models import Post
+from database.session import connector
 from schemas.post import PostCreateSchema
 
 

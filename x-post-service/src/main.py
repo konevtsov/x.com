@@ -4,9 +4,8 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 from configuration.config import settings
-from routes import api_router
 from create_fastapi_app import create_app
-
+from routes import api_router
 
 logging.basicConfig(
     level=settings.logging.log_level,

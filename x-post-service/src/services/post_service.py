@@ -1,11 +1,10 @@
 from fastapi import Depends
 
-from repositories.post_repository import PostRepository
-from schemas.post import PostCreateSchema, PostDeleteSchema, PostSchema
+from database.models import Post
 from exceptions.base_exception import PermissionDeniedError
 from exceptions.post_exceptions import PostNotFoundError
-
-from database.models import Post
+from repositories.post_repository import PostRepository
+from schemas.post import PostCreateSchema, PostDeleteSchema, PostSchema
 
 
 class PostService:
