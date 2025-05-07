@@ -1,5 +1,5 @@
+from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Boolean, String, Integer
 
 from .base import Base
 from .follow import Follow
@@ -17,10 +17,14 @@ class User(Base):
     avatar_url: Mapped[str] = mapped_column(String, nullable=True)
 
     followers: Mapped[list["Follow"]] = relationship(
-        "Follow", foreign_keys="Follow.followed_id", back_populates="followed_user",
+        "Follow",
+        foreign_keys="Follow.followed_id",
+        back_populates="followed_user",
     )
     following: Mapped[list["Follow"]] = relationship(
-        "Follow", foreign_keys="Follow.follower_id", back_populates="follower_user",
+        "Follow",
+        foreign_keys="Follow.follower_id",
+        back_populates="follower_user",
     )
 
     @property

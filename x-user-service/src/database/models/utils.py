@@ -1,11 +1,11 @@
 def camel_case_to_snake_case(input_str: str) -> str:
     """
-        >>> camel_case_to_snake_case("SomeSDK")
-        'some_sdk'
-        >>> camel_case_to_snake_case("RServoDrive")
-        'r_servo_drive'
-        >>> camel_case_to_snake_case("SDKDemo")
-        'sdk_demo'
+    >>> camel_case_to_snake_case("SomeSDK")
+    'some_sdk'
+    >>> camel_case_to_snake_case("RServoDrive")
+    'r_servo_drive'
+    >>> camel_case_to_snake_case("SDKDemo")
+    'sdk_demo'
     """
     chars = []
     for c_idx, char in enumerate(input_str):

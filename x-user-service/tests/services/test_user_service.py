@@ -1,19 +1,15 @@
-import pytest
-
 from unittest.mock import AsyncMock
 
-from services.user_service import UserService
-from schemas.token import TokenIntrospectSchema
-from schemas.user import FollowSchema, UnfollowSchema, UserUpdateSchema
+import pytest
+
+from dto.user import UserCreateDTO
 from exceptions.user_exceptions import (
     UserNotFoundError,
-    UsernameAlreadyExistsError,
-    FollowYourselfError,
-    UnfollowYourselfError,
-    AlreadyFollowedError,
 )
-from dto.user import UserCreateDTO
-from repositories.user_repository import UserRepository, UserCreateDTO
+from repositories.user_repository import UserRepository
+from schemas.token import TokenIntrospectSchema
+from schemas.user import UserUpdateSchema
+from services.user_service import UserService
 
 
 @pytest.fixture

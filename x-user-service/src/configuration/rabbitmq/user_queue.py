@@ -1,12 +1,12 @@
 import aio_pika
 
-from services.user_service import UserService
-from repositories.user_repository import UserRepository
-from database.session import connector
-from .base import BaseMQ
 from configuration.config import settings
+from database.session import connector
 from dto.user import UserCreateDTO
+from repositories.user_repository import UserRepository
+from services.user_service import UserService
 
+from .base import BaseMQ
 
 MQ_USER_EXCHANGE_NAME = "user"
 MQ_USER_QUEUE_NAME = "user_queue"

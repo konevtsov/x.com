@@ -1,11 +1,9 @@
-__all__ = (
-    "api_v1_router",
-)
+__all__ = ("api_v1_router",)
 from fastapi import APIRouter
 
-from .user import router as user_router
 from configuration.config import settings
 
+from .user import router as user_router
 
 api_v1_router = APIRouter(
     prefix=settings.api.v1.prefix,

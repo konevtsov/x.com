@@ -1,6 +1,6 @@
-from typing import Union
-from io import BytesIO
 from contextlib import asynccontextmanager
+from io import BytesIO
+from typing import Union
 
 from aiobotocore.session import get_session
 
@@ -33,7 +33,6 @@ class S3StorageService:
         destination_path: str,
         content: Union[str, bytes],
     ) -> None:
-
         if isinstance(content, bytes):
             buffer = BytesIO(content)
         else:

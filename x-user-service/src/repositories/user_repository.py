@@ -1,16 +1,16 @@
 from fastapi import Depends
-from sqlalchemy import select, update, insert, delete, Result, text, func
+from sqlalchemy import Result, delete, func, insert, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import IntegrityError
 
-from database.models import User, Follow
+from database.models import Follow, User
 from database.session import connector
+from dto.user import UserCreateDTO
+from exceptions.user_exceptions import AlreadyFollowedError
 from schemas.user import (
     UserUpdateSchema,
 )
-from dto.user import UserCreateDTO
-from exceptions.user_exceptions import AlreadyFollowedError
 
 
 class UserRepository:
@@ -33,20 +33,12 @@ class UserRepository:
         return result.scalar()
 
     async def update_user_by_user_id(self, user: UserUpdateSchema, user_id: int) -> None:
-        stmt = (
-            update(User).
-            where(User.user_id == user_id).
-            values(**user.model_dump())
-        )
+        stmt = update(User).where(User.user_id == user_id).values(**user.model_dump())
         await self._session.execute(stmt)
         await self._session.commit()
 
     async def update_user_by_email(self, user: UserUpdateSchema, email: str) -> None:
-        stmt = (
-            update(User).
-            where(User.email == email).
-            values(**user.model_dump())
-        )
+        stmt = update(User).where(User.email == email).values(**user.model_dump())
         await self._session.execute(stmt)
         await self._session.commit()
 
@@ -71,8 +63,8 @@ class UserRepository:
         stmt = insert(Follow).values(followed_id=followed_id, follower_id=follower_id)
         try:
             await self._session.execute(stmt)
-        except IntegrityError:
-            raise AlreadyFollowedError
+        except IntegrityError as exc:
+            raise AlreadyFollowedError from exc
         await self._session.commit()
 
     async def unfollow_by_username(self, followed_id: int, follower_id: int) -> None:
@@ -81,12 +73,20 @@ class UserRepository:
         await self._session.commit()
 
     async def get_user_followings(self, user_id: int):
-        stmt = select(User.username, User.bio).outerjoin(Follow, Follow.followed_id == User.id).where(Follow.follower_id == user_id)
+        stmt = (
+            select(User.username, User.bio)
+            .outerjoin(Follow, Follow.followed_id == User.id)
+            .where(Follow.follower_id == user_id)
+        )
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
 
     async def get_user_followers(self, user_id: int):
-        stmt = select(User.username, User.bio).outerjoin(Follow, Follow.follower_id == User.id).where(Follow.followed_id == user_id)
+        stmt = (
+            select(User.username, User.bio)
+            .outerjoin(Follow, Follow.follower_id == User.id)
+            .where(Follow.followed_id == user_id)
+        )
         result: Result = await self._session.execute(stmt)
         return result.scalars().all()
 

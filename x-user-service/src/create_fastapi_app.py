@@ -2,15 +2,15 @@ import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
     get_swagger_ui_oauth2_redirect_html,
 )
+from fastapi.responses import ORJSONResponse
 
-from database.session import connector
 from configuration.rabbitmq.user_queue import user_queue
+from database.session import connector
 
 
 @asynccontextmanager

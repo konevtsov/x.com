@@ -1,27 +1,26 @@
 from fastapi import Depends
 
-from schemas.user import (
-    FullUserSchema,
-    PartialUserSchema,
-    FollowSchema,
-    UnfollowSchema,
-    UserUpdateSchema,
-    AvatarUploadSchema,
-    DeleteAvatarSchema,
-    GetAvatarSchema,
-)
-from repositories.user_repository import UserRepository
-from schemas.token import TokenIntrospectSchema
+from dto.user import UserCreateDTO
 from exceptions.user_exceptions import (
-    UserNotFoundError,
+    AvatarNotFoundError,
     FollowYourselfError,
     UnfollowYourselfError,
     UsernameAlreadyExistsError,
-    AvatarNotFoundError,
+    UserNotFoundError,
 )
-from dto.user import UserCreateDTO
+from repositories.user_repository import UserRepository
+from schemas.token import TokenIntrospectSchema
+from schemas.user import (
+    AvatarUploadSchema,
+    DeleteAvatarSchema,
+    FollowSchema,
+    FullUserSchema,
+    GetAvatarSchema,
+    PartialUserSchema,
+    UnfollowSchema,
+    UserUpdateSchema,
+)
 from services.s3_service import s3_service
-
 
 AVATARS_FOLDER_NAME = "profile_images"
 ORIGINAL_AVATAR_FILENAME = "original"

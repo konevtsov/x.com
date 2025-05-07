@@ -1,22 +1,23 @@
-from fastapi import APIRouter, Depends, UploadFile, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from fastapi.responses import StreamingResponse
 
+from schemas.token import TokenIntrospectSchema
 from schemas.user import (
-    FollowSchema,
-    UnfollowSchema,
     AvatarUploadSchema,
-    UserUpdateSchema,
     DeleteAvatarSchema,
+    FollowSchema,
     GetAvatarSchema,
-)
-from .user_schemas import (
-    UserUpdateRequestSchema,
-    FollowRequestSchema,
-    UnfollowRequestSchema,
+    UnfollowSchema,
+    UserUpdateSchema,
 )
 from services.user_service import UserService
+
 from .token_introspection import get_token_info_from_current_user
-from schemas.token import TokenIntrospectSchema
+from .user_schemas import (
+    FollowRequestSchema,
+    UnfollowRequestSchema,
+    UserUpdateRequestSchema,
+)
 
 router = APIRouter(tags=["Users"])
 
@@ -54,9 +55,7 @@ async def get_user_by_username(
     return await user_service.get_user_by_username(username=username, user_token=user_token)
 
 
-@router.post(
-    path="/follow"
-)
+@router.post(path="/follow")
 async def follow(
     follow_request: FollowRequestSchema,
     user_token: TokenIntrospectSchema = Depends(get_token_info_from_current_user),
@@ -69,9 +68,7 @@ async def follow(
     await user_service.follow(follow_schema=follow_schema)
 
 
-@router.post(
-    path="/unfollow"
-)
+@router.post(path="/unfollow")
 async def unfollow(
     unfollow_request: UnfollowRequestSchema,
     user_token: TokenIntrospectSchema = Depends(get_token_info_from_current_user),
@@ -100,7 +97,7 @@ async def upload_avatar(
     if not content:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is empty")
 
-    file_extension = str(file.content_type.split('/')[1])
+    file_extension = str(file.content_type.split("/")[1])
     upload_avatar_schema = AvatarUploadSchema(content=content, file_extension=file_extension)
     await user_service.upload_avatar(upload_schema=upload_avatar_schema, user_token=user_token)
 

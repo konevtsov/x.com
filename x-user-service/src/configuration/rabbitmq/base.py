@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 class BaseMQ:
     """Base class for RabbitMQ"""
+
     def __init__(self, mq_url: str) -> None:
         self.mq_url = mq_url
         self.connection = None
@@ -24,6 +25,7 @@ class BaseMQ:
         def custom_serializer(obj):
             if isinstance(obj, BaseModel):
                 return obj.model_dump()
+
         return json.dumps(data, default=custom_serializer).encode()
 
     @staticmethod
