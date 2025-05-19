@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+  namespace: x-com
+  labels:
+    app.kubernetes.io/name: x-auth-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: x-auth-service
+  template:
+    metadata:
+      labels:
+        app: x-auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: docker.io/nerdcode/x-auth-service:latest
+          ports:
+            - containerPort: 8001
+              name: auth-svc
+          envFrom:
+            - secretRef:
+                name: auth-secret
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%

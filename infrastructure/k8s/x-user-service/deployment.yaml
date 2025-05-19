@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+  namespace: x-com
+  labels:
+    app.kubernetes.io/name: x-user-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: x-user-service
+  template:
+    metadata:
+      labels:
+        app: x-user-service
+    spec:
+      containers:
+        - name: user-service
+          image: docker.io/nerdcode/x-user-service:latest
+          ports:
+            - containerPort: 8001
+              name: user-svc
+          envFrom:
+            - secretRef:
+                name: user-secret
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
