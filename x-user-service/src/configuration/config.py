@@ -1,117 +1,125 @@
+import os
+from dataclasses import dataclass, field
+from dotenv import load_dotenv
 from pathlib import Path
 from typing import Literal
-
-from pydantic import BaseModel, PostgresDsn
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict,
-)
 
 LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 BASE_DIR = Path(__file__).parent.parent
 
-
-class RunConfig(BaseModel):
-    title: str = "X.com User"
-    host: str = "127.0.0.1"
-    port: int = 8002
+env_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
-class CorsSettings(BaseModel):
-    allow_origins: list[str] = [
+@dataclass
+class RunConfig:
+    title: str = os.getenv("RUN_TITLE", "X.com User Service")
+    host: str = os.getenv("RUN_HOST", "127.0.0.1")
+    port: int = int(os.getenv("RUN_PORT", 8002))
+
+
+@dataclass
+class CorsSettings:
+    allow_origins: list[str] = field(default_factory=lambda: [
         "http://localhost",
         "http://localhost:8000",
-    ]
-    allow_credentials: bool = True
-    allow_methods: list[str] = ["*"]
-    allow_headers: list[str] = ["*"]
+    ])
+    allow_credentials: bool = field(default=True)
+    allow_methods: list[str] = field(default_factory=lambda: ["*"])
+    allow_headers: list[str] = field(default_factory=lambda: ["*"])
+
+    def __post_init__(self):
+        env_origins = os.getenv("ALLOW_ORIGINS")
+        if env_origins:
+            self.allow_origins = [origin.strip() for origin in env_origins.split(",")]
 
 
-class ApiV1Prefix(BaseModel):
-    prefix: str = "/v1"
-    users: str = "/users"
+@dataclass
+class ApiV1Prefix:
+    prefix: str = os.getenv("API_V1_PREFIX", "/v1")
+    users: str = os.getenv("API_V1_USERS_PREFIX", "/users")
 
 
-class ApiPrefix(BaseModel):
-    prefix: str = "/api"
-    v1: ApiV1Prefix = ApiV1Prefix()
+@dataclass
+class ApiPrefix:
+    prefix: str = os.getenv("API_PREFIX", "/api")
+    v1: ApiV1Prefix = field(default_factory=ApiV1Prefix)
 
 
-class AuthApi(BaseModel):
-    base_url: str = "http://localhost:8001/api/v1"
-    introspect_path: str = "/auth/Introspect/"
+@dataclass
+class AuthApiConfig:
+    base_url: str = os.getenv("AUTH_API_BASE_URL", "http://localhost:8001/api/v1")
+    introspect_path: str = os.getenv("AUTH_API_INTROSPECT_PATH", "/auth/Introspect/")
 
     @property
     def introspect_url(self) -> str:
         return self.base_url + self.introspect_path
 
 
-class LoggingConfig(BaseModel):
-    log_level: Literal[
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-        "CRITICAL",
-    ] = "INFO"
+@dataclass
+class LoggingConfig:
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = os.getenv("LOGGING_LOG_LEVEL", "INFO")
     log_format: str = LOG_DEFAULT_FORMAT
 
 
-class DatabaseConfig(BaseModel):
-    url: PostgresDsn
-    test_db_url: PostgresDsn
-    echo: bool = False
-    echo_pool: bool = False
-    pool_size: int = 50
-    max_overflow: int = 10
+@dataclass
+class DatabaseConfig:
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "")
+    POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", 5432))
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "")
 
-    naming_convention: dict[str, str] = {
+    echo: bool = bool(os.getenv("DB_ECHO", False))
+    echo_pool: bool = bool(os.getenv("DB_ECHO", False))
+    pool_size: int = int(os.getenv("DB_POOL_SIZE", 50))
+    max_overflow: int = int(os.getenv("DB_MAX_OVERFLOW", 10))
+
+    naming_convention: dict[str, str] = field(default_factory=lambda: {
         "ix": "ix_%(column_0_label)s",
         "uq": "uq_%(table_name)s_%(column_0_N_name)s",
         "ck": "ck_%(table_name)s_%(constraint_name)s",
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
-    }
-
-
-class RMQConfig(BaseModel):
-    user: str = "guest"
-    password: str = "guest"
-    host: str = "localhost"
-    port: int = 5672
+    })
 
     @property
     def url(self) -> str:
-        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}/"
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}" \
+               f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
-class S3Config(BaseModel):
-    access_key: str
-    secret_key: str
-    endpoint_url: str
-    bucket_name: str
+@dataclass
+class RMQConfig:
+    user: str = os.getenv("RMQ_USER", "guest")
+    password: str = os.getenv("RMQ_PASSWORD", "guest")
+    host: str = os.getenv("RMQ_HOST", "localhost")
+    port: int = int(os.getenv("RMQ_PORT", 5672))
+
+    @property
+    def url(self) -> str:
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}"
 
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=(
-            BASE_DIR / ".env.dist",
-            BASE_DIR / ".env",
-        ),
-        case_sensitive=False,
-        env_nested_delimiter="__",
-        env_prefix="APP_CONFIG__",
-        extra="allow",
-    )
-    run: RunConfig = RunConfig()
-    cors: CorsSettings = CorsSettings()
-    logging: LoggingConfig = LoggingConfig()
-    rmq: RMQConfig = RMQConfig()
-    auth_api: AuthApi = AuthApi()
-    api: ApiPrefix = ApiPrefix()
-    s3: S3Config
-    db: DatabaseConfig
+@dataclass
+class S3Config:
+    access_key: str = os.getenv("S3_ACCESS_KEY", "")
+    secret_key: str = os.getenv("S3_SECRET_KEY", "")
+    endpoint_url: str = os.getenv("S3_ENDPOINT_URL", "")
+    bucket_name: str = os.getenv("S3_BUCKET_NAME", "")
+
+
+@dataclass
+class Settings:
+    run: RunConfig = field(default_factory=RunConfig)
+    cors: CorsSettings = field(default_factory=CorsSettings)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
+    auth_api: AuthApiConfig = field(default_factory=AuthApiConfig)
+    api: ApiPrefix = field(default_factory=ApiPrefix)
+    rmq: RMQConfig = field(default_factory=RMQConfig)
+    s3: S3Config = field(default_factory=S3Config)
+    db: DatabaseConfig = field(default_factory=DatabaseConfig)
 
 
 settings = Settings()

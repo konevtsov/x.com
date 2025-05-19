@@ -1,108 +1,116 @@
+from dataclasses import dataclass, field
+import os
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, PostgresDsn
-from pydantic_settings import (
-    BaseSettings,
-    SettingsConfigDict,
-)
+from dotenv import load_dotenv
 
 LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
 
 BASE_DIR = Path(__file__).parent.parent
 
-
-class RunConfig(BaseModel):
-    title: str = "X.com Auth"
-    host: str = "127.0.0.1"
-    port: int = 8001
+env_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
-class CorsSettings(BaseModel):
-    allow_origins: list[str] = [
+@dataclass
+class RunConfig:
+    title: str = os.getenv("RUN_TITLE", "X.com Auth")
+    host: str = os.getenv("RUN_HOST", "127.0.0.1")
+    port: int = int(os.getenv("RUN_PORT", 8001))
+
+
+@dataclass
+class CorsSettings:
+    allow_origins: list[str] = field(default_factory=lambda: [
         "http://localhost",
         "http://localhost:8000",
-    ]
-    allow_credentials: bool = True
-    allow_methods: list[str] = ["*"]
-    allow_headers: list[str] = ["*"]
+    ])
+    allow_credentials: bool = field(default=True)
+    allow_methods: list[str] = field(default_factory=lambda: ["*"])
+    allow_headers: list[str] = field(default_factory=lambda: ["*"])
+
+    def __post_init__(self):
+        env_origins = os.getenv("ALLOW_ORIGINS")
+        if env_origins:
+            self.allow_origins = [origin.strip() for origin in env_origins.split(",")]
 
 
-class ApiV1Prefix(BaseModel):
-    prefix: str = "/v1"
-    auth: str = "/auth"
+@dataclass
+class ApiV1Prefix:
+    prefix: str = os.getenv("API_V1_PREFIX", "/v1")
+    auth: str = os.getenv("API_V1_AUTH_PREFIX", "/auth")
 
 
-class ApiPrefix(BaseModel):
-    prefix: str = "/api"
-    v1: ApiV1Prefix = ApiV1Prefix()
+@dataclass
+class ApiPrefix:
+    prefix: str = os.getenv("API_PREFIX", "/api")
+    v1: ApiV1Prefix = field(default_factory=ApiV1Prefix)
 
 
-class LoggingConfig(BaseModel):
-    log_level: Literal[
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-        "CRITICAL",
-    ] = "INFO"
+@dataclass
+class LoggingConfig:
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = os.getenv("LOGGING_LOG_LEVEL", "INFO")
     log_format: str = LOG_DEFAULT_FORMAT
 
 
-class AuthJWT(BaseModel):
+@dataclass
+class AuthJWT:
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
-    access_token_expire_minutes: int = 15
-    refresh_token_expire_days: int = 60
+    access_token_expire_minutes: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 15))
+    refresh_token_expire_days: int = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", 60))
 
 
-class RMQConfig(BaseModel):
-    user: str = "guest"
-    password: str = "guest"
-    host: str = "localhost"
-    port: int = 5672
+@dataclass
+class RMQConfig:
+    user: str = os.getenv("RMQ_USER", "guest")
+    password: str = os.getenv("RMQ_PASSWORD", "guest")
+    host: str = os.getenv("RMQ_HOST", "localhost")
+    port: int = int(os.getenv("RMQ_PORT", 5672))
 
     @property
-    def url(self):
+    def url(self) -> str:
         return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}"
 
 
-class DatabaseConfig(BaseModel):
-    url: PostgresDsn
-    test_db_url: PostgresDsn
-    echo: bool = False
-    echo_pool: bool = False
-    pool_size: int = 50
-    max_overflow: int = 10
+@dataclass
+class DatabaseConfig:
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "")
+    POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "")
+    POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", 5432))
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "")
 
-    naming_convention: dict[str, str] = {
+    echo: bool = bool(os.getenv("DB_ECHO", False))
+    echo_pool: bool = bool(os.getenv("DB_ECHO", False))
+    pool_size: int = int(os.getenv("DB_POOL_SIZE", 50))
+    max_overflow: int = int(os.getenv("DB_MAX_OVERFLOW", 10))
+
+    naming_convention: dict[str, str] = field(default_factory=lambda: {
         "ix": "ix_%(column_0_label)s",
         "uq": "uq_%(table_name)s_%(column_0_N_name)s",
         "ck": "ck_%(table_name)s_%(constraint_name)s",
         "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
         "pk": "pk_%(table_name)s",
-    }
+    })
+
+    @property
+    def url(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}" \
+               f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=(
-            BASE_DIR / ".env.dist",
-            BASE_DIR / ".env",
-        ),
-        case_sensitive=False,
-        env_nested_delimiter="__",
-        env_prefix="APP_CONFIG__",
-        extra="allow",
-    )
-    run: RunConfig = RunConfig()
-    cors: CorsSettings = CorsSettings()
-    logging: LoggingConfig = LoggingConfig()
-    auth_jwt: AuthJWT = AuthJWT()
-    api: ApiPrefix = ApiPrefix()
-    rmq: RMQConfig = RMQConfig()
-    db: DatabaseConfig
+@dataclass
+class Settings:
+    run: RunConfig = field(default_factory=RunConfig)
+    cors: CorsSettings = field(default_factory=CorsSettings)
+    logging: LoggingConfig = field(default_factory=LoggingConfig)
+    auth_jwt: AuthJWT = field(default_factory=AuthJWT)
+    api: ApiPrefix = field(default_factory=ApiPrefix)
+    rmq: RMQConfig = field(default_factory=RMQConfig)
+    db: DatabaseConfig = field(default_factory=DatabaseConfig)
 
 
 settings = Settings()
