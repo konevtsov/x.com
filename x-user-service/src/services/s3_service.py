@@ -1,10 +1,14 @@
+import logging
 from contextlib import asynccontextmanager
 from io import BytesIO
 from typing import Union
 
 from aiobotocore.session import get_session
+from botocore.exceptions import ClientError
 
 from configuration.config import settings
+
+log = logging.getLogger(__name__)
 
 
 class S3StorageService:
@@ -28,11 +32,23 @@ class S3StorageService:
         async with self.session.create_client("s3", **self.config) as client:
             yield client
 
+    async def s3_setup(self):
+        async with self.get_client() as client:
+            try:
+                await client.head_bucket(Bucket=self.bucket_name)
+            except ClientError as e:
+                error_code = e.response["Error"]["Code"]
+                if error_code == "404":
+                    await client.create_bucket(Bucket=self.bucket_name)
+                else:
+                    log.critical("Unexpected error: %s", e)
+
     async def upload_file(
         self,
         destination_path: str,
         content: Union[str, bytes],
     ) -> None:
+        await self.s3_setup()
         if isinstance(content, bytes):
             buffer = BytesIO(content)
         else:

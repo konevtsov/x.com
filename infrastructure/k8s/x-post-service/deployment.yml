@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-service-deployment
+  namespace: x-com
+  labels:
+    app.kubernetes.io/name: x-post-service
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: x-post-service
+  template:
+    metadata:
+      labels:
+        app: x-post-service
+    spec:
+      containers:
+        - name: post-service
+          image: docker.io/nerdcode/x-post-service:latest
+          ports:
+            - containerPort: 8003
+              name: post-svc
+          envFrom:
+            - secretRef:
+                name: post-secret
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%

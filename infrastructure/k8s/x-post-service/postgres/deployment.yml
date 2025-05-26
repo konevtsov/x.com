@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-service-db
+  namespace: x-com
+spec:
+  selector:
+    matchLabels:
+      app: post-service-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: post-service-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          envFrom:
+            - secretRef:
+                name: post-secret
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: post-service-db-pvc
