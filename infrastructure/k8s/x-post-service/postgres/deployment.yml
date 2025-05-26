@@ -16,22 +16,9 @@ spec:
       containers:
         - name: postgres
           image: postgres:17-alpine
-          env:
-            - name: POSTGRES_DB
-              valueFrom:
-                secretKeyRef:
-                  name: post-secret
-                  key: POSTGRES_DB
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: post-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: post-secret
-                  key: POSTGRES_PASSWORD
+          envFrom:
+            - secretRef:
+                name: post-secret
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
@@ -39,4 +26,3 @@ spec:
         - name: pgdata
           persistentVolumeClaim:
             claimName: post-service-db-pvc
-

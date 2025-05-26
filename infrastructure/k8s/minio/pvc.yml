@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: minio-pvc
-  namespace: x-system
+  namespace: x-com
 spec:
   accessModes:
     - ReadWriteOnce

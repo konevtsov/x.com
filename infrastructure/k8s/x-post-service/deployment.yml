@@ -23,8 +23,8 @@ spec:
             - containerPort: 8003
               name: post-svc
           envFrom:
-            - configMapRef:
-                name: x-post-config
+            - secretRef:
+                name: post-secret
   strategy:
     type: RollingUpdate
     rollingUpdate:
