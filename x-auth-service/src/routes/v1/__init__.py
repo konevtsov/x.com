@@ -11,6 +11,5 @@ api_v1_router = APIRouter(
 
 api_v1_router.include_router(
     router=auth_router,
-    prefix=settings.api.v1.auth,
     tags=["Auth"],
 )
