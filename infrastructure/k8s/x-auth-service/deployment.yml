@@ -4,6 +4,7 @@ metadata:
   name: auth-service-deployment
   namespace: x-com
   labels:
+    app: x-auth-service
     app.kubernetes.io/name: x-auth-service
     tier: backend
 spec:

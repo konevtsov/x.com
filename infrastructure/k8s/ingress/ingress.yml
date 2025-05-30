@@ -1,22 +1,40 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: x-ingress
+  name: nginx-ingress
   namespace: x-com
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 
 spec:
   ingressClassName: nginx
   rules:
-    - host: localhost
+    - host: auth.localhost
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          - path: /.*
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: x-auth-svc
                 port:
                   number: 8001
+
+    - host: api.localhost
+      http:
+        paths:
+          - path: /.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: x-user-svc
+                port:
+                  number: 8002
+          - path: /.*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: x-post-svc
+                port:
+                  number: 8003

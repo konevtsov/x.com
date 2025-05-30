@@ -8,6 +8,6 @@ spec:
     app: x-user-service
   ports:
     - protocol: TCP
-      port: 8001
+      port: 8002
       targetPort: user-svc
   type: ClusterIP

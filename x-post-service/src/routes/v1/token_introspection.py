@@ -22,3 +22,4 @@ async def get_token_info_from_current_user(
             if not response.ok:
                 raise InvalidTokenError
             return TokenIntrospectSchema(**await response.json())
+    

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: x-com
+data:
+  use-http2: "true"
+  enable-gzip: "true"
+  gzip-level: "1"
+  gzip-types: >
+    text/css text/javascript text/xml text/plain text/x-component
+    application/javascript application/x-javascript application/json
+    application/xml application/rss+xml application/atom+xml
+    font/truetype font/opentype application/vnd.ms-fontobject image/svg+xml
+  keep-alive: "30"
+  keep-alive-requests: "100000"
+  client-body-timeout: "10"
+  proxy-send-timeout: "2"
+  proxy-read-timeout: "10"
+  log-format-escape-json: "true"
+  log-format-upstream: '{"time": "$time_iso8601", "remote_addr": "$proxy_protocol_addr", "request": "$request", "status": $status}'
+  enable-access-log-for-default-backend: "false"
